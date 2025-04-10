@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/albus-shore/Llyra/assets/logo.png" width="300" alt="Llyra Logo"/>
+  <img src="https://raw.githubusercontent.com/albus-shore/Llyra/main/assets/logo.png" width="300" alt="Llyra Logo"/>
 </p>
 
 <h1 align="center">Llyra</h1>
