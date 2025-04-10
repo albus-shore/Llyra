@@ -5,7 +5,7 @@
 <h1 align="center">Llyra</h1>
 
 <p align="center">
-  <em>A lightweight, plug-and-play interface for calling local or remote LLMs with structured strategy.</em>
+  <em>Lightweight LLaMA Reasoning Assistant</em>
 </p>
 
 ---
