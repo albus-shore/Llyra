@@ -4,5 +4,8 @@
 # Ignore Python Cache File
 __pycache__/
 
+# Ignore model file
+*.gguf
+
 # Ignore System File
 .DS_Store
