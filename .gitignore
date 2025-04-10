@@ -1,0 +1,8 @@
+# Ignore Python Environment
+.venv/
+
+# Ignore Python Cache File
+__pycache__/
+
+# Ignore System File
+.DS_Store
