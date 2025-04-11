@@ -76,7 +76,7 @@ print(response)
 ## 📦 Installation
 
 ```bash
-pip install llyra
+pip install https://github.com/albus-shore/Llyra/releases/download/version/package_file_name
 ```
 
 ---

@@ -4,6 +4,10 @@
 # Ignore Python Cache File
 __pycache__/
 
+# Ignore build file
+dist/
+*.egg-info/
+
 # Ignore model file
 *.gguf
 
