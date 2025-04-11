@@ -1,35 +1,27 @@
+from .configs import Config
 from . import llama,prompt,log
 
 class Model:
     '''The class is defined for fulfill local LLM call.'''
 
     ## ========================= Class Initialize Method ========================== ##
-    def __init__(self,model:str=None,directory:str=None,gpu:bool=None) -> object:
+    def __init__(self,path:str=None) -> object:
         '''The method is defined for initialize model object.
         Args:
-            model: A string indicate the model file,
-                which should be placed in './model/' by default.
-            directory: A string indicate the folder of model file.
-            gpu: A bool indicate whether use GPU for acceleration.
+            path:   A string indicate the path to config file.
         Returns:
             A target LLM loaded Model object.
         '''
-        # Load necessary modules
-        from . import config
+        # Initialize config object
+        config = Config()
         # Import toolkit config
-        config_path = 'config/config.json'
-        self.model, self.directory, self.gpu = config.load(config_path)
-        # Update config parameter by input
-        if model:
-            self.model = config.name(model)
-        if directory:
-            self.directory = config.folder(directory)
-        if gpu:
-            self.gpu = gpu
-        # Make model object attribute
-        self.LLM = llama.initialize(self.model,
-                                         self.directory,
-                                         self.gpu)
+        config.load(path)
+        # Extract config attribute
+        for attribute in config.attributes:
+            setattr(self,attribute,getattr(config,attribute))
+        # Initialize model Llama object
+        self.LLM = llama.initialize(self.path,
+                                    self.gpu)
         # Initialize history attributea
         self.query:str
         self.response:str
