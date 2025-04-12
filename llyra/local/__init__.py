@@ -13,15 +13,12 @@ class Model:
             A target LLM loaded Model object.
         '''
         # Initialize config object
-        config = Config()
+        self.config = Config()
         # Import toolkit config
-        config.load(path)
-        # Extract config attribute
-        for attribute in config.attributes:
-            setattr(self,attribute,getattr(config,attribute))
+        self.config.load(path)
         # Initialize model Llama object
-        self.LLM = llama.initialize(self.path,
-                                    self.gpu)
+        self.LLM = llama.initialize(self.config.path,
+                                    self.config.gpu)
         # Initialize history attributea
         self.query:str
         self.response:str
