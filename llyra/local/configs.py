@@ -80,7 +80,7 @@ class Config:
                 setattr(self,attribute,config_dictionary.get(attribute))
             # Critical parameters check
             if not self.model:
-                raise IndexError('Error: Missing model name parameter.')
+                raise IndexError('Error: Missing model file name parameter.')
             if not self.directory:
                 raise IndexError('Error: Missing model file directory parameter.')
             # Fix possible invalid attribute
