@@ -35,6 +35,22 @@ def folder(directory:str) -> str:
     # Return model file folder value
     return folder
 
+## =============== Necessary Parameters Check Function =============== ##
+def necessary(strategy:str,format:str) -> None:
+    '''The function is defined for check necessary config parameters
+    Args:
+        strategy: A string indicate the path to the inference strategy file
+        format: A sting indicate the format of chat inference's input
+    '''
+    if not strategy:
+        warning = 'Warning: Missing inference strategy file.\n'
+        warning += '\t\t Inference unavailiable without manual updating.'
+        warn(warning,UserWarning)
+    if not format:
+        warning = 'Warning: Missing chat format.'
+        warning += '\t\t Chat inference unavailiable without manual updating'
+        warn(warning,UserWarning)
+
 
 ### =============================== Expose Class =============================== ###
 class Config:
@@ -87,18 +103,50 @@ class Config:
                 error = 'Error: Missing model file directory parameter.'
                 raise IndexError(error)
             # Necessary parameters check
-            if not self.strategy:
-                warning = 'Warning: Missing inference strategy file.\n'
-                warning += '\t\t Inference unavailiable without manual updating.'
-                warn(warning,UserWarning)
-            if not self.format:
-                warning = 'Warning: Missing chat format.'
-                warning += '\t\t Chat inference unavailiable without manual updating'
-                warn(warning,UserWarning)
+            necessary(self.strategy,
+                      self.format)
             # Fix possible invalid attribute
             self.model = name(self.model)
             self.directory = folder(self.directory)
             # Make model file path
             self.path = self.directory + self.model + '.gguf'
-        
+
     ## ========================== Update Method ========================== ##
+    def update(self,
+               model:str,
+               directory:str,
+               strategy:str,
+               gpu:bool,
+               format:str,
+               ram:bool,) -> None:
+        '''The method is defined for update config parameters with inputs.
+        Args:
+            model: A string indicate the name of model file
+            directory: A string indicate the directory of model file
+            strategy: A string indicate the path to the inference strategy file
+            gpu: A boolean indicate whether using GPU for inference acceleration
+            format: A sting indicate the format of chat inference's input
+            ram: A boolean indicate whether keeping the model loaded in memory
+        '''
+        # Update parameter according to the input
+        ## Update key parameters
+        if model:
+            self.model = name(model)
+        if directory:
+            self.directory = folder(directory)
+        if model or directory:
+            self.path = self.directory + self.model + '.gguf'
+        ## Update normal parameter
+        input_config = (strategy,
+                        gpu,
+                        format,
+                        ram)
+        normal_config = self.attributes[2:-1]
+        for value in input_config:
+            if value != None:
+                index = input_config.index(value)
+                attribute = normal_config[index]
+                setattr(self,attribute,value)
+        # Necessary parameters check
+        necessary(self.strategy,
+                  self.format)
