@@ -8,7 +8,7 @@ class Model:
     def __init__(self,path:str=None) -> object:
         '''The method is defined for initialize model object.
         Args:
-            path:   A string indicate the path to config file.
+            path: A string indicate the path to config file.
         Returns:
             A target LLM loaded Model object.
         '''

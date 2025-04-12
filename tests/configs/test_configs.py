@@ -1,5 +1,7 @@
 import pytest
+from unittest.mock import patch,MagicMock
 from llyra.local.configs import Config
+from pathlib import Path
 
 @pytest.fixture
 def config():
@@ -209,3 +211,54 @@ def test_update_ram_config_parameter(config):
     assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram == False
+
+## ========================== Write Method Test ========================== ##
+def test_writing_current_config_into_file_without_conflict(config):
+    '''Test whether method write current config into file properly.'''
+    config.load('tests/configs/config_normal.json')
+    config.update(model='test',
+                  directory='test/',
+                  strategy='tests/config/strategy.json',
+                  gpu=True,
+                  format='openai',
+                  ram=False,)
+    with patch.object(Path,'exists',return_value=False):
+        with patch.object(Path,'write_text') as mock_write:
+            config.write()
+            content = mock_write.call_args[0][0]
+            assert mock_write.called
+            assert '"model": "test"' in content
+            assert '"directory": "test/"' in content
+            assert '"strategy": "tests/config/strategy.json"' in content
+            assert '"gpu": true' in content
+            assert '"format": "openai"' in content
+            assert '"ram": false' in content
+
+def test_writing_current_config_into_file_with_conflict(config):
+    '''Test whether methed handle condition that meets file name conflict.'''
+    config.load('tests/configs/config_normal.json')
+    config.update(model='test',
+                  directory='test/',
+                  strategy='tests/config/strategy.json',
+                  gpu=True,
+                  format='openai',
+                  ram=False,)
+    with patch.object(Path,'exists',return_value=True):
+        with patch('builtins.input',return_value='w'):
+            with patch.object(Path,'write_text') as mock_write:
+                config.write()
+                content = mock_write.call_args[0][0]
+                assert mock_write.called
+                assert '"model": "test"' in content
+                assert '"directory": "test/"' in content
+                assert '"strategy": "tests/config/strategy.json"' in content
+                assert '"gpu": true' in content
+                assert '"format": "openai"' in content
+                assert '"ram": false' in content
+    
+    with patch.object(Path,'exists',return_value=True):
+        with patch('builtins.input',return_value='q'):
+            with patch.object(Path,'write_text') as mock_write:
+                with pytest.raises(FileExistsError):
+                    config.write()
+                    assert not mock_write.called
