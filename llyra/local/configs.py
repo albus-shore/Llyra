@@ -55,6 +55,7 @@ class Config:
         # Define config attributes
         self.attributes = ('model',
                       'directory',
+                      'strategy',
                       'gpu',
                       'format',
                       'ram',
