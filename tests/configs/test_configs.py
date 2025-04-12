@@ -54,3 +54,17 @@ def test_load_config_file_without_directory_key(config):
     '''Test whether method raise exception properly when missing directory key.'''
     with pytest.raises(IndexError,match='Error: Missing model file directory parameter.'):
         config.load('tests/configs/config_missing_directory.json')
+
+def test_load_config_file_without_strategy_key(config):
+    '''Test whether method show warning properly when missing strategy key.'''
+    warning = 'Warning: Missing inference strategy file.\n'
+    warning += '\t\t Inference unavailiable without manual updating.'
+    with pytest.warns(UserWarning,match=warning):
+        config.load('tests/configs/config_missing_strategy.json')
+
+def test_load_config_file_without_format_key(config):
+    '''Test whether method show warning properly when missing strategy key.'''
+    warning = 'Warning: Missing chat format.'
+    warning += '\t\t Chat inference unavailiable without manual updating'
+    with pytest.warns(UserWarning,match=warning):
+        config.load('tests/configs/config_missing_format.json')
