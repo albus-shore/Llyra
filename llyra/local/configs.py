@@ -1,4 +1,5 @@
 from pathlib import Path
+from warnings import warn
 import json
 
 ### ============================= Inside Functions ============================= ###
@@ -80,9 +81,20 @@ class Config:
                 setattr(self,attribute,config_dictionary.get(attribute))
             # Critical parameters check
             if not self.model:
-                raise IndexError('Error: Missing model file name parameter.')
+                error = 'Error: Missing model file name parameter.'
+                raise IndexError(error)
             if not self.directory:
-                raise IndexError('Error: Missing model file directory parameter.')
+                error = 'Error: Missing model file directory parameter.'
+                raise IndexError(error)
+            # Necessary parameters check
+            if not self.strategy:
+                warning = 'Warning: Missing inference strategy file.\n'
+                warning += '\t\t Inference unavailiable without manual updating.'
+                warn(warning,UserWarning)
+            if not self.format:
+                warning = 'Warning: Missing chat format.'
+                warning += '\t\t Chat inference unavailiable without manual updating'
+                warn(warning,UserWarning)
             # Fix possible invalid attribute
             self.model = name(self.model)
             self.directory = folder(self.directory)
