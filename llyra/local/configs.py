@@ -4,7 +4,7 @@ import json
 
 ### ============================= Inside Functions ============================= ###
 ## ========================== Name Function ========================== ##
-def name(file:str) -> str:
+def name(filename:str) -> str:
     '''The function is defined for struct name of model file.
     Args:
         file: A string indicate the name of model file.
@@ -12,10 +12,10 @@ def name(file:str) -> str:
         name: A string indicate the name of model file without prefix.
     '''
     # Discriminate whether model file name with prefix
-    if file.endswith('.gguf'):
-        name = file[:-5]
+    if filename.endswith('.gguf'):
+        name = filename[:-5]
     else:
-        name = file
+        name = filename
     # Return model file name value
     return name
 
@@ -63,7 +63,7 @@ class Config:
         '''
         self.config = 'config/config.json'
 
-    ## ========================== Load Method ========================== ##
+    ## ============================= Load Method ============================= ##
     def load(self,path:str=None) -> None:
         '''The method is defined for load toolkit config file.
         Args:
@@ -111,7 +111,7 @@ class Config:
             # Make model file path
             self.path = self.directory + self.model + '.gguf'
 
-    ## ========================== Update Method ========================== ##
+    ## ============================ Update Method ============================ ##
     def update(self,
                model:str,
                directory:str,
@@ -150,3 +150,37 @@ class Config:
         # Necessary parameters check
         necessary(self.strategy,
                   self.format)
+        
+    ## ============================ Write Method ============================ ##
+    def write(self) -> None:
+        '''The method is defined for writing current config into file.'''
+        # Initialize new config file path
+        file_path = Path('config/config.json')
+        # Discriminate whether the file name has been occupied
+        if file_path.exists():
+            alarm = "Alarm: There is a existed config.json under '.config/'."
+            alarm += "\n\t  This operation will rewrite all content in it."
+            alarm += "\n\t  Send 'w' to confirm operation, "
+            alarm += "Send 'q' to terminate process."
+            while True:
+                action = input(alarm)
+                if action.lower() == 'w':
+                    break
+                elif action.lower() == 'q':
+                    raise FileExistsError()
+                else:
+                    print('Invalid command.')
+        # Prepare content
+        file_content = {
+            'model': self.model,
+            'directory': self.directory,
+            'strategy': self.strategy,
+            'gpu': self.gpu,
+            'format': self.format,
+            'ram': self.ram
+            }
+        file_content = json.dumps(file_content)
+        # Write file
+        file_path.write_text(file_content)
+        # Terminal Information
+        print("Current config has been write into '.config/config.json'.")
