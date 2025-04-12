@@ -1,0 +1,7 @@
+{
+    "model": "model",
+    "directory": "models/",
+    "strategy": "config/strategy.json",
+    "gpu": false,
+    "format": "llama-2"
+}
