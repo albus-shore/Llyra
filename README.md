@@ -45,18 +45,19 @@ print(response)
 
 ## 🛠 Configuration Example
 
-**configs/default_strategy.json**:
+**config/strategy.json**:
 
 ```json
-{
-  "input_role": "<|User|>",
-  "output_role": "<|Assistant|>",
+[{
+  "type": "call",
+  "role": {
+      "input": "<|User|>",
+      "output": "<|Assistant|>"
+    },
   "stop": "<|User|>",
-  "temperature": 0.7,
-  "top_p": 0.9,
   "max_tokens": 512,
-  "chat_format": "llama-2"
-}
+  "temperature": 0.7
+}]
 ```
 
 ---
