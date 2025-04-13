@@ -91,7 +91,7 @@ class Strategy:
     def call(self,
              input_role:str,output_role:str,
              stop:str,max_token:int,
-             temperature:int) -> None:
+             temperature:float) -> None:
         '''The method is defined for update inference strategy for call.
         Args:
             input_roleinput_role: A string indicate the role of input.
