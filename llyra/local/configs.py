@@ -93,24 +93,24 @@ class Config:
             raise FileNotFoundError(error)
         else:
             config_dictionary:dict = json.loads(config_json)
-            # Read config parameter
-            for attribute in self.attributes:
-                setattr(self,attribute,config_dictionary.get(attribute))
-            # Critical parameters check
-            if not self.model:
-                error = 'Error: Missing model file name parameter.'
-                raise IndexError(error)
-            if not self.directory:
-                error = 'Error: Missing model file directory parameter.'
-                raise IndexError(error)
-            # Necessary parameters check
-            necessary(self.strategy,
-                      self.format)
-            # Fix possible invalid attribute
-            self.model = name(self.model)
-            self.directory = folder(self.directory)
-            # Make model file path
-            self.path = self.directory + self.model + '.gguf'
+        # Read config parameter
+        for attribute in self.attributes:
+            setattr(self,attribute,config_dictionary.get(attribute))
+        # Critical parameters check
+        if not self.model:
+            error = 'Error: Missing model file name parameter.'
+            raise IndexError(error)
+        if not self.directory:
+            error = 'Error: Missing model file directory parameter.'
+            raise IndexError(error)
+        # Necessary parameters check
+        necessary(self.strategy,
+                  self.format)
+        # Fix possible invalid attribute
+        self.model = name(self.model)
+        self.directory = folder(self.directory)
+        # Make model file path
+        self.path = self.directory + self.model + '.gguf'
 
     ## ============================ Update Method ============================ ##
     def update(self,
