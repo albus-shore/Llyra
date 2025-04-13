@@ -5,6 +5,6 @@
         "output": "<|Assistant|>"
         },
     "stop": "<|User|>",
-    "max_token": "128000",
+    "max_token": 128e3,
     "temperature": 0.6
 }]
