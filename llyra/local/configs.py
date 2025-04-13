@@ -61,14 +61,8 @@ class Config:
         Returns:
             config: A object indicate config parameters and operation.
         '''
+        # Define default path to config file
         self.config = 'config/config.json'
-
-    ## ============================= Load Method ============================= ##
-    def load(self,path:str=None) -> None:
-        '''The method is defined for load toolkit config file.
-        Args:
-            path: A string indicate the path to the config file.
-        '''
         # Define config attributes
         self.attributes = ('model',
                       'directory',
@@ -77,6 +71,13 @@ class Config:
                       'format',
                       'ram',
                       'path',)
+
+    ## ============================= Load Method ============================= ##
+    def load(self,path:str=None) -> None:
+        '''The method is defined for load toolkit config file.
+        Args:
+            path: A string indicate the path to the config file.
+        '''
         # Discriminate whether changing defualt config file path
         if path:
             self.config = path
