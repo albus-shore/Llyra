@@ -36,7 +36,7 @@ from llyra import Model
 
 model = model(model="ggml-model.gguf")
 
-response = llm.call("What is the capital of Canada?")
+response = model.call("What is the capital of Canada?")
 
 print(response)
 ```
