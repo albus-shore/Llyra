@@ -1,8 +1,9 @@
 from .configs import Config
 from .strategys import Strategy
 from .prompts import Prompt
+from .logs import Log
 from llama_cpp import Llama
-from . import log
+
 ### =============================== Inside Functions =============================== ###
 ## =============================== GPU Set Function =============================== ##
 def gpu(gpu:bool) -> int:
@@ -34,6 +35,7 @@ class Model:
         self.config = Config()
         self.strategy = Strategy()
         self.prompt = Prompt()
+        self.log = Log()
         # Import toolkit config
         self.config.load(path)
         # Import inference config
@@ -45,10 +47,9 @@ class Model:
                            use_mlock=self.config.ram or False,
                            n_ctx=0,
                            verbose=False)
-        # Initialize history attributea
+        # Initialize current inference attributea
         self.query:str
         self.response:str
-        self.history:list = []
 
     ## ========================== Call Method ========================== ##
     def call(self,message:str,
@@ -72,16 +73,20 @@ class Model:
                            temperature=temperature)
         # Set prompt object necessary attribute
         self.prompt.set(self.strategy.call_role)
+        # Get input content
+        self.query = message
         # Make prompt
-        prompt = self.prompt.call(message)
+        prompt = self.prompt.call(self.query)
         # Fulfill model inference
         self.response = self.model.create_completion(prompt=prompt,
             stop=self.strategy.call_stop,
             max_tokens=self.strategy.call_tokens,
             temperature=self.strategy.call_temperature)['choices'][0]['text']
         # Update log
-        self.query = message
-        record = log.record(self.strategy.call_role,message,self.response)
-        self.history.append(record)
+        self.log.call(model=self.config.model,
+                      role=self.strategy.call_role,
+                      input=self.query,output=self.response,
+                      temperature=self.strategy.call_temperature,
+                      strategy=self.config.strategy)
         # Return model inference response
         return self.response
