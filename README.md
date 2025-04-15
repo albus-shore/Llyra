@@ -21,11 +21,32 @@
 - **Prompt Engineering Friendly (Planned)**  
   Easily manage system prompts, roles, and chat formats through external `.json` or `.txt` files.
 
+- **Optional RAG Integration (Planned)**  
+  Native support for Weaviate-based retrieval-augmented generation.
+
 - **Tool Support (Planned)**  
   Enable LLMs to use JSON-defined tools (function-calling style) with one argument.
 
-- **Optional RAG Integration (Planned)**  
-  Native support for Weaviate-based retrieval-augmented generation.
+---
+
+## ⚙️ Dependencies
+
+Llyra does **not** bundle any backend inference engines. You must install them manually according to your needs:
+
+**Required (choose one):**
+- For local models: https://github.com/abetlen/llama-cpp-python
+- For remote inference: any Ollama-compatible API
+
+**Optional:**
+- For RAG: `pip install weaviate-client`
+
+---
+
+## 📦 Installation
+
+```bash
+pip install https://github.com/albus-shore/Llyra/releases/download/version/package_file_name
+```
 
 ---
 
@@ -34,7 +55,7 @@
 ```python
 from llyra import Model
 
-model = model(model="ggml-model.gguf")
+model = Model()
 
 response = model.call("What is the capital of Canada?")
 
@@ -44,6 +65,18 @@ print(response)
 ---
 
 ## 🛠 Configuration Example
+
+**config/config.json**
+
+```json
+{
+    "model": "model",
+    "directory": "models/",
+    "strategy": "config/strategy.json",
+    "gpu": false,
+    "format": "llama-2"
+}
+```
 
 **config/strategy.json**:
 
@@ -67,37 +100,30 @@ print(response)
 | Phase | Feature                                  | Status      |
 |-------|------------------------------------------|-------------|
 | 1     | Minimal `llama-cpp-python` local chat    | 🔄 Ongoing   |
-| 2     | Predefined prompts via `.txt` / `.json`  | 🔄 Ongoing   |
+| 2     | Predefined prompts via `.txt` / `.json`  | ⏳ Planned   |
 | 3     | Ollama remote API support                | ⏳ Planned   |
 | 4     | Weaviate RAG support                     | ⏳ Planned   |
 | 5     | Tool/function-calling via JSON           | ⏳ Planned   |
 
 ---
 
-## 📦 Installation
-
-```bash
-pip install https://github.com/albus-shore/Llyra/releases/download/version/package_file_name
-```
-
----
-
-## ⚙️ Dependencies
-
-Llyra does **not** bundle any backend inference engines. You must install them manually according to your needs:
-
-**Required (choose one):**
-- For local models: https://github.com/abetlen/llama-cpp-python
-- For remote inference: any Ollama-compatible API
-
-**Optional:**
-- For RAG: `pip install weaviate-client`
-
----
-
 ## 🪪 License
 
 This project is licensed under the **MIT License**.
+
+---
+
+## 📚 Attribution
+
+Currently, this package is built on top of the following open-source libraries:
+
+- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) — licensed under the MIT License  
+  Python bindings for llama.cpp
+
+This package does **not include or redistribute** any third-party source code.  
+All dependencies are installed via standard Python packaging tools (e.g. `pip`).
+
+We gratefully acknowledge the authors and maintainers of these libraries for their excellent work.
 
 ---
 
