@@ -43,7 +43,7 @@ class Model:
         # Initialize model Llama object
         self.model = Llama(model_path=self.config.path,
                            n_gpu_layers=gpu(self.config.gpu),
-                           chat_format=self.config.format,
+                           chat_format='llama-2',
                            use_mlock=self.config.ram or False,
                            n_ctx=0,
                            verbose=False)
