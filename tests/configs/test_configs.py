@@ -16,7 +16,6 @@ def test_load_default_config_file(config):
                 'directory',
                 'strategy',
                 'gpu',
-                'format',
                 'ram',
                 'path',)
     assert config.attributes == attributs
@@ -24,7 +23,6 @@ def test_load_default_config_file(config):
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram is None
 
@@ -35,7 +33,6 @@ def test_load_config_file_from_path(config):
                 'directory',
                 'strategy',
                 'gpu',
-                'format',
                 'ram',
                 'path',)
     assert config.attributes == attributs
@@ -43,7 +40,6 @@ def test_load_config_file_from_path(config):
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram is None
 
@@ -64,12 +60,6 @@ def test_load_config_file_without_strategy_key(config):
     with pytest.warns(UserWarning,match=warning):
         config.load('tests/configs/config_missing_strategy.json')
 
-def test_load_config_file_without_format_key(config):
-    '''Test whether method show warning properly when missing strategy key.'''
-    warning = 'Warning: Missing chat format.'
-    warning += '\t\t Chat inference unavailiable without manual updating'
-    with pytest.warns(UserWarning,match=warning):
-        config.load('tests/configs/config_missing_format.json')
 
 ## ============================= Update Method Test ============================= ##
 def test_update_model_config_parameter(config):
@@ -80,14 +70,12 @@ def test_update_model_config_parameter(config):
                       directory=None,
                       strategy=None,
                       gpu=None,
-                      format=None,
                       ram=None,)
         assert config.model == 'test'
         assert config.path == 'models/test.gguf'
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.ram is None
 
 def test_update_directory_config_parameter(config):
@@ -98,14 +86,12 @@ def test_update_directory_config_parameter(config):
                       directory=possible,
                       strategy=None,
                       gpu=None,
-                      format=None,
                       ram=None,)
         assert config.directory == 'tests/'
         assert config.path == 'tests/model.gguf'
     assert config.model == 'model'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.ram is None
 
 def test_update_strategy_config_parameter(config):
@@ -117,13 +103,11 @@ def test_update_strategy_config_parameter(config):
                   directory=None,
                   strategy='tests/config/strategy.json',
                   gpu=None,
-                  format=None,
                   ram=None,)
     assert config.model == 'model'
     assert config.directory == 'models/'
     assert config.strategy == 'tests/config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram is None
     warning = 'Warning: Missing inference strategy file.\n'
@@ -133,50 +117,14 @@ def test_update_strategy_config_parameter(config):
                   directory=None,
                   strategy='',
                   gpu=None,
-                  format=None,
                   ram=None,)
         assert config.model == 'model'
         assert config.directory == 'models/'
         assert config.strategy == ''
         assert config.gpu == False
-        assert config.format == 'llama-2'
         assert config.path == 'models/model.gguf'
         assert config.ram is None
 
-def test_update_format_config_parameter(config):
-    '''Test whether method update format config parameter properly.
-    And show warning when setting format to empty properly.
-    '''
-    config.load('tests/configs/config_normal.json')
-    config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=None,
-                  format='openai',
-                  ram=None,)
-    assert config.model == 'model'
-    assert config.directory == 'models/'
-    assert config.strategy == 'config/strategy.json'
-    assert config.gpu == False
-    assert config.format == 'openai'
-    assert config.path == 'models/model.gguf'
-    assert config.ram is None
-    warning = 'Warning: Missing chat format.'
-    warning += '\t\t Chat inference unavailiable without manual updating'
-    with pytest.warns(UserWarning,match=warning):
-        config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=None,
-                  format='',
-                  ram=None,)
-        assert config.model == 'model'
-        assert config.directory == 'models/'
-        assert config.strategy == 'config/strategy.json'
-        assert config.gpu == False
-        assert config.format == ''
-        assert config.path == 'models/model.gguf'
-        assert config.ram is None
 
 def test_update_gpu_config_parameter(config):
     '''Test whether method update gpu config parameter properly.'''
@@ -185,13 +133,11 @@ def test_update_gpu_config_parameter(config):
                   directory=None,
                   strategy=None,
                   gpu=True,
-                  format=None,
                   ram=None,)
     assert config.model == 'model'
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == True
-    assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram is None
 
@@ -202,13 +148,11 @@ def test_update_ram_config_parameter(config):
                   directory=None,
                   strategy=None,
                   gpu=None,
-                  format=None,
                   ram=False,)
     assert config.model == 'model'
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
     assert config.gpu == False
-    assert config.format == 'llama-2'
     assert config.path == 'models/model.gguf'
     assert config.ram == False
 
@@ -220,7 +164,6 @@ def test_writing_current_config_into_file_without_conflict(config):
                   directory='test/',
                   strategy='tests/config/strategy.json',
                   gpu=True,
-                  format='openai',
                   ram=False,)
     with patch.object(Path,'exists',return_value=False):
         with patch.object(Path,'write_text') as mock_write:
@@ -231,7 +174,6 @@ def test_writing_current_config_into_file_without_conflict(config):
             assert '"directory": "test/"' in content
             assert '"strategy": "tests/config/strategy.json"' in content
             assert '"gpu": true' in content
-            assert '"format": "openai"' in content
             assert '"ram": false' in content
 
 def test_writing_current_config_into_file_with_conflict(config):
@@ -241,7 +183,6 @@ def test_writing_current_config_into_file_with_conflict(config):
                   directory='test/',
                   strategy='tests/config/strategy.json',
                   gpu=True,
-                  format='openai',
                   ram=False,)
     with patch.object(Path,'exists',return_value=True):
         with patch('builtins.input',return_value='w'):
@@ -253,7 +194,6 @@ def test_writing_current_config_into_file_with_conflict(config):
                 assert '"directory": "test/"' in content
                 assert '"strategy": "tests/config/strategy.json"' in content
                 assert '"gpu": true' in content
-                assert '"format": "openai"' in content
                 assert '"ram": false' in content
     
     with patch.object(Path,'exists',return_value=True):

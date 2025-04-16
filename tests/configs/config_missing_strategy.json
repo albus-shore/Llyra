@@ -1,6 +1,5 @@
 {
     "model": "model",
     "directory": "models/",
-    "gpu": false,
-    "format": "llama-2"
+    "gpu": false
 }
