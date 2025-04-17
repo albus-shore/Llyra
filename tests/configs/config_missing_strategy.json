@@ -1,5 +1,9 @@
 {
     "model": "model",
     "directory": "models/",
+    "indicate":{
+        "begin": "<|begin_of_sentence|>",
+        "end": "<|end_of_sentence|>"
+        },
     "gpu": false
 }
