@@ -7,11 +7,24 @@ class Prompt():
         Returns:
             prompt: A object indicate prompt for inference.
         '''
+        # Initialize model inference indication attributes
+        self.begin:str = None
+        self.end:str = None
         # Initialize single call prompt build parameter attributes
         self.call_input:str = None
         self.call_output:str = None
+    ## ============================ Config Method ============================ ##
+    def config(self,indicate:dict) -> None:
+        '''The method is defined for set prompt config parameters with input.
+        Args:
+            indicate: A dictionary indicate begin and end of content 
+                indicate token for model inference.
+        '''
+        # Set model inference indication attributes
+        self.begin = indicate['begin']
+        self.end = indicate['end']
 
-    ## ============================= Set Mothod ============================= ##
+    ## ============================= Set Method ============================= ##
     def set(self,call:dict) -> None:
         '''The method is defined for set prompt parameters with input.
         Args:
@@ -31,6 +44,10 @@ class Prompt():
             prompt: A string indicate proper structed content for inference.            
         '''
         # Make structed prompt
-        prompt = self.call_input + content + self.call_output
+        prompt = self.begin
+        prompt += self.call_input
+        prompt += content 
+        prompt += self.call_output
+        prompt += self.end
         # Return prompte for inference
         return prompt
