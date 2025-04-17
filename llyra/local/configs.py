@@ -58,13 +58,16 @@ class Config:
         '''
         # Define default path to config file
         self.config = 'config/config.json'
-        # Define config attributes
-        self.attributes = ('model',
-                      'directory',
-                      'strategy',
-                      'gpu',
-                      'ram',
-                      'path',)
+        # Initialize config attributes
+        self.model:str = None
+        self.directory:str = None
+        self.indicate:dict = {
+            'begin': None,
+            'end': None,
+            }
+        self.strategy:str = None
+        self.gpu:bool = False
+        self.ram:bool = False
 
     ## ============================= Load Method ============================= ##
     def load(self,path:str=None) -> None:
@@ -88,8 +91,14 @@ class Config:
         else:
             config_dictionary:dict = json.loads(config_json)
         # Read config parameter
-        for attribute in self.attributes:
-            setattr(self,attribute,config_dictionary.get(attribute))
+        self.model = config_dictionary.get('model',None)
+        self.directory = config_dictionary.get('directory',None)
+        if config_dictionary.get('indicate',False):
+            self.indicate['begin'] = config_dictionary.get('indicate').get('begin',None)
+            self.indicate['end'] = config_dictionary.get('indicate').get('end',None)
+        self.strategy = config_dictionary.get('strategy',None)
+        self.gpu = config_dictionary.get('gpu',None)
+        self.ram = config_dictionary.get('ram',None)
         # Critical parameters check
         if not self.model:
             error = 'Error: Missing model file name parameter.'
@@ -107,8 +116,8 @@ class Config:
 
     ## ============================ Update Method ============================ ##
     def update(self,
-               model:str,
-               directory:str,
+               model:str,directory:str,
+               begin:str,end:str,
                strategy:str,
                gpu:bool,
                ram:bool,) -> None:
@@ -116,6 +125,8 @@ class Config:
         Args:
             model: A string indicate the name of model file
             directory: A string indicate the directory of model file
+            begin: A string indicate begin of context squence for inference.
+            end: A string indicate end of context squence for inference.
             strategy: A string indicate the path to the inference strategy file
             gpu: A boolean indicate whether using GPU for inference acceleration
             ram: A boolean indicate whether keeping the model loaded in memory
@@ -129,15 +140,16 @@ class Config:
         if model or directory:
             self.path = self.directory + self.model + '.gguf'
         ## Update normal parameter
-        input_config = (strategy,
-                        gpu,
-                        ram)
-        normal_config = self.attributes[2:-1]
-        for value in input_config:
-            if value != None:
-                index = input_config.index(value)
-                attribute = normal_config[index]
-                setattr(self,attribute,value)
+        if begin != None:
+            self.indicate['begin'] = begin
+        if end != None:
+            self.indicate['end'] = end
+        if strategy != None:
+            self.strategy = strategy
+        if gpu != None:
+            self.gpu = gpu
+        if ram != None:
+            self.ram = ram
         # Necessary parameters check
         necessary(self.strategy)
         
@@ -164,6 +176,10 @@ class Config:
         file_content = {
             'model': self.model,
             'directory': self.directory,
+            'indicate':{
+                'begin': self.indicate['begin'],
+                'end': self.indicate['end'],
+                },
             'strategy': self.strategy,
             'gpu': self.gpu,
             'ram': self.ram
