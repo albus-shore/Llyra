@@ -1,0 +1,13 @@
+[
+    {
+    "type": "chat",
+    "prompt": "prompts/prompt.txt",
+    "role":{
+        "input": "<|User|>",
+        "output": "<|Assistant|>"
+        },
+    "stop": "<|User|>",
+    "max_token": 0,
+    "temperature": 0.6
+    }             
+]
