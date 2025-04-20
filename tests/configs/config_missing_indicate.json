@@ -2,5 +2,10 @@
     "model": "model",
     "directory": "models/",
     "strategy": "config/strategy.json",
+    "placeholder":{
+        "history": "<<|History|>>",
+        "rag": "<<|RAG|>>",
+        "tool": "<<|Tool|>>"
+        },
     "gpu": false
 }

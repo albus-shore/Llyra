@@ -5,5 +5,10 @@
         "begin": "<|begin_of_sentence|>",
         "end": "<|end_of_sentence|>"
         },
+    "placeholder":{
+            "history": "<<|History|>>",
+            "rag": "<<|RAG|>>",
+            "tool": "<<|Tool|>>"
+        },
     "gpu": false
 }
