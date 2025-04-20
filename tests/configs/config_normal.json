@@ -6,5 +6,10 @@
         "end": "<|end_of_sentence|>"
         },
     "strategy": "config/strategy.json",
+    "placeholder":{
+        "history": "<<|History|>>",
+        "rag": "<<|RAG|>>",
+        "tool": "<<|Tool|>>"
+        },
     "gpu": false
 }

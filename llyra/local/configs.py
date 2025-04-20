@@ -66,6 +66,11 @@ class Config:
             'end': None,
             }
         self.strategy:str = None
+        self.placeholder:dict = {
+            'history': None,
+            'rag': None,
+            'tool': None,
+            }
         self.gpu:bool = False
         self.ram:bool = False
 
@@ -97,6 +102,10 @@ class Config:
             self.indicate['begin'] = config_dictionary.get('indicate').get('begin',None)
             self.indicate['end'] = config_dictionary.get('indicate').get('end',None)
         self.strategy = config_dictionary.get('strategy',None)
+        if config_dictionary.get('placeholder',False):
+            self.placeholder['history'] = config_dictionary.get('placeholder').get('history')
+            self.placeholder['rag'] = config_dictionary.get('placeholder').get('rag')
+            self.placeholder['tool'] = config_dictionary.get('placeholder').get('tool')
         self.gpu = config_dictionary.get('gpu',None)
         self.ram = config_dictionary.get('ram',None)
         # Critical parameters check
@@ -119,6 +128,7 @@ class Config:
                model:str,directory:str,
                begin:str,end:str,
                strategy:str,
+               history:str,rag:str,tool:str,
                gpu:bool,
                ram:bool,) -> None:
         '''The method is defined for update config parameters with inputs.
@@ -127,8 +137,11 @@ class Config:
             directory: A string indicate the directory of model file
             begin: A string indicate begin of context squence for inference.
             end: A string indicate end of context squence for inference.
-            strategy: A string indicate the path to the inference strategy file
-            gpu: A boolean indicate whether using GPU for inference acceleration
+            strategy: A string indicate the path to the inference strategy file.
+            history: A string indicate the chat history placeholder in chat prompt.
+            rag: A string indicate the chat rag content placeholder in chat prompt.
+            tool: A string indicate the chat tools placeholder in chat prompt.
+            gpu: A boolean indicate whether using GPU for inference acceleration.
             ram: A boolean indicate whether keeping the model loaded in memory
         '''
         # Update parameter according to the input
@@ -146,6 +159,12 @@ class Config:
             self.indicate['end'] = end
         if strategy != None:
             self.strategy = strategy
+        if history != None:
+            self.placeholder['history'] = history
+        if rag != None:
+            self.placeholder['rag'] = rag
+        if tool != None:
+            self.placeholder['tool'] = tool
         if gpu != None:
             self.gpu = gpu
         if ram != None:
@@ -181,6 +200,11 @@ class Config:
                 'end': self.indicate['end'],
                 },
             'strategy': self.strategy,
+            'placeholder': {
+                'history': self.placeholder['history'],
+                'rag': self.placeholder['rag'],
+                'tool': self.placeholder['tool']
+                },
             'gpu': self.gpu,
             'ram': self.ram
             }
