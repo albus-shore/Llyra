@@ -33,3 +33,7 @@ def test_call_method(prompt):
     prompt.set({'input':'<|User|>','output':'<|Assistant|>'})
     output = prompt.call('Evening!')
     assert output == '<|begin_of_sentence|><|User|>Evening!<|Assistant|><|end_of_sentence|>'
+    prompt.config({'begin':'<|begin_of_sentence|>','end':'<|end_of_sentence|>'})
+    prompt.set({'input':'','output':''})
+    output = prompt.call('Evening!')
+    assert output == 'Evening!'
