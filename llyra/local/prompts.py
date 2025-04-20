@@ -44,10 +44,13 @@ class Prompt():
             prompt: A string indicate proper structed content for inference.            
         '''
         # Make structed prompt
-        prompt = self.begin or ''
-        prompt += self.call_input or ''
-        prompt += content 
-        prompt += self.call_output or ''
-        prompt += self.end or ''
+        if self.call_input or self.call_output:
+            prompt = self.begin or ''
+            prompt += self.call_input or ''
+            prompt += content 
+            prompt += self.call_output or ''
+            prompt += self.end or ''
+        else:
+            prompt = content
         # Return prompte for inference
         return prompt
