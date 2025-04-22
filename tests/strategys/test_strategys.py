@@ -42,39 +42,90 @@ def test_load_strategy_with_invalid_format(strategy):
     with pytest.raises(IsADirectoryError,match=error):
         strategy.load('tests/strategys/strategy_format_error.json')
 
-def test_load_strategy_with_missing_keys(strategy):
+def test_load_strategy_with_missing_type(strategy):
     '''Test whether method raise excepetion when missing keys.'''
-    error = 'Error: Invalid strategy formate.'
+    error = 'Error: Invalid strategy format.'
     with pytest.raises(KeyError,match=error):
-        strategy.load('tests/strategys/strategy_missing_keys.json')
+        strategy.load('tests/strategys/strategy_missing_type.json')
 
-def test_load_strategy_with_empty_input_role(strategy):
-    '''Test whether method raise exception with empty input role.'''
-    error = 'Error: Missing input role parameter.'
-    with pytest.raises(ValueError,match=error):
-        strategy.load('tests/strategys/strategy_empty_input_role.json')
+def test_load_strategy_with_no_call_input_role(strategy):
+    '''
+    Test whether method show warning with no input role for call.
+    And load strategy file form path properly.
+    '''
+    warning = 'Warning: Missing input role parameter for call inference.'
+    with pytest.warns(UserWarning,match=warning):
+        strategy.load('tests/strategys/strategy_no_call_input_role.json')
+        assert strategy.call_role == {
+            'input': None,
+            'output': "<|Assistant|>"
+            }
+        assert strategy.call_stop == "<|User|>"
+        assert strategy.call_tokens == 128e3
+        assert strategy.call_temperature == 0.6
 
-def test_load_strategy_with_empty_output_role(strategy):
-    '''Test whether method raise exception with empty output role.'''
-    error = 'Error: Missing output role parameter.'
-    with pytest.raises(ValueError,match=error):
-        strategy.load('tests/strategys/strategy_empty_output_role.json')
+def test_load_strategy_with_no_call_output_role(strategy):
+    '''
+    Test whether method show warning with no output role for call.
+    And load strategy file form path properly.
+    '''
+    warning = 'Warning: Missing output role parameter for call inference.'
+    with pytest.warns(UserWarning,match=warning):
+        strategy.load('tests/strategys/strategy_no_call_output_role.json')
+        assert strategy.call_role == {
+            'input': "<|User|>",
+            'output': None
+            }
+        assert strategy.call_stop == "<|User|>"
+        assert strategy.call_tokens == 128e3
+        assert strategy.call_temperature == 0.6
 
-def test_load_strategy_with_empty_max_token(strategy):
-    '''Test whether method show warning with empty max_token.'''
+def test_load_strategy_with_no_call_max_token(strategy):
+    '''
+    Test whether method show warning with no max_token.
+    And load strategy file form path properly.
+    '''
     warning = 'Warning: Error set max token strategy parameter, '
     warning += 'the max generation token number will be set '
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_empty_max_token.json')
+        strategy.load('tests/strategys/strategy_no_call_max_token.json')
+        assert strategy.call_role == {
+            'input': "<|User|>",
+            'output': "<|Assistant|>"
+            }
+        assert strategy.call_stop == "<|User|>"
+        assert strategy.call_tokens == None
+        assert strategy.call_temperature == 0.6
 
-def test_load_strategy_with_empty_stop(strategy):
-    '''Test whether method show warning with empty stop.'''
+def test_load_strategy_with_call_no_stop(strategy):
+    '''
+    Test whether method show warning with no stop.
+    And load strategy file form path properly.
+    '''
     warning = 'Warning: Missing stop strategy parameter, '
     warning += "inference won't stop "
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_empty_stop.json')
+        strategy.load('tests/strategys/strategy_no_call_stop.json')
+        assert strategy.call_role == {
+            'input': "<|User|>",
+            'output': "<|Assistant|>"
+            }
+        assert strategy.call_stop == None
+        assert strategy.call_tokens == 128e3
+        assert strategy.call_temperature == 0.6
+
+def test_load_strategy_with_no_call_temperature(strategy):
+    '''Test whether method load call strategy witout temperature from path properly.'''
+    strategy.load('tests/strategys/strategy_no_call_temperature.json')
+    assert strategy.call_role == {
+        'input': "<|User|>",
+        'output': "<|Assistant|>"
+        }
+    assert strategy.call_stop == "<|User|>"
+    assert strategy.call_tokens == 128e3
+    assert strategy.call_temperature == 0
 
 ## ========================== Update Method Test ========================== ##
 def test_update_call_strategy(strategy):

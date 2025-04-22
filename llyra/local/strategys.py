@@ -3,7 +3,30 @@ from warnings import warn
 import json
 
 ### ============================= Inside Functions ============================= ###
-## =============== Necessary Parameters Check Function =============== ##
+## ====================== Role Parameter Check Function ====================== ##
+def role(role:dict,is_chat:bool) -> None:
+    '''The function is defined for check strategy prameter role.
+    Args:
+        role: A dictionary indicate input and output role.
+        is_chat: A boolean indicate whether the check is for chat strategy.
+    '''
+    if is_chat:
+        if not role['input']:
+            error = 'Error: Missing input role parameter for chat inference.'
+            raise ValueError(error)
+        if not role['output']:
+            error = 'Error: Missing output role parameter for chat inference.'
+            raise ValueError(error)
+    else:
+        if not role['input']:
+            warning = 'Warning: Missing input role parameter for call inference.'
+            warn(warning,UserWarning)
+        if not role['output']:
+            warning = 'Warning: Missing output role parameter for call inference.'
+            warn(warning,UserWarning)
+
+
+## =================== Necessary Parameters Check Function =================== ##
 def necessary(max_token:int,stop:str) -> None:
     '''The function is defined for check necessary strategy parameters.
     Args:
@@ -42,7 +65,6 @@ class Strategy:
         self.call_temperature:float = None
         # Define iteration chat strategy
 
-
     ## ============================= Load Method ============================= ##
     def load(self,path:str) -> None:
         '''The method is defined for load inference strategy file.
@@ -68,25 +90,21 @@ class Strategy:
         # Read strategy
         for strategy in strategys:
             try:
-                if strategy['type'] == 'call':
-                    self.call_role['input'] = strategy['role']['input']
-                    self.call_role['output'] = strategy['role']['output']
-                    self.call_stop = strategy['stop']
-                    self.call_tokens = strategy['max_token']
-                    self.call_temperature = strategy['temperature']
-                elif strategy['type'] == 'chat':
-                    pass
+                match strategy['type']:
+                    case 'call':
+                        self.call_role['input'] = strategy.get('role',{}).get('input')
+                        self.call_role['output'] = strategy.get('role',{}).get('output')
+                        self.call_stop = strategy.get('stop')
+                        self.call_tokens = strategy.get('max_token')
+                        self.call_temperature = strategy.get('temperature',0)
+                        role(self.call_role,False)
+                    case 'chat':
+                        pass
             except KeyError:
-                raise KeyError('Error: Invalid strategy formate.')
-        # Critial parameter check
-        if not self.call_role['input']:
-            raise ValueError('Error: Missing input role parameter.')
-        if not self.call_role['output']:
-            raise ValueError('Error: Missing output role parameter.')
+                raise KeyError('Error: Invalid strategy format.')
         # Necessray parameter check
         necessary(self.call_tokens,self.call_stop)
 
-                
     ## ========================== Update Methods ========================== ##
     def call(self,
              input_role:str,output_role:str,
@@ -94,7 +112,7 @@ class Strategy:
              temperature:float) -> None:
         '''The method is defined for update inference strategy for call.
         Args:
-            input_roleinput_role: A string indicate the role of input.
+            input_role: A string indicate the role of input.
             output_role: A string indicate the role of output.
             stop: A string indicate where the model should stop generation.
             max_token: A integrate indicate 
@@ -102,9 +120,9 @@ class Strategy:
             temperature: A float indicate the model inference temperature.
         '''
         # Update strategy parameters
-        if input_role:
+        if input_role != None:
             self.call_role['input'] = input_role
-        if output_role:
+        if output_role != None:
             self.call_role['output'] = output_role
         if stop != None:
             self.call_stop = stop

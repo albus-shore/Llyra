@@ -2,10 +2,9 @@
     {
     "type": "call",
     "role":{
-        "input": "<|User|>",
-        "output": "<|Assistant|>"
+        "input": "<|User|>"
         },
-    "stop": "",
+    "stop": "<|User|>",
     "max_token": 128e3,
     "temperature": 0.6
     }             
