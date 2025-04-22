@@ -4,13 +4,17 @@ import json
 
 ### ============================= Inside Functions ============================= ###
 ## ====================== Role Parameter Check Function ====================== ##
-def role(role:dict,is_chat:bool) -> None:
+def role(role:dict,is_chat:bool,prompt:str=None) -> None:
     '''The function is defined for check strategy prameter role.
     Args:
         role: A dictionary indicate input and output role.
         is_chat: A boolean indicate whether the check is for chat strategy.
+        prompt: A string indicate additional prompt for chat inference.
     '''
     if is_chat:
+        if not role['prompt'] and prompt:
+            error = 'Error: Missing prompt role parameter for chat inference.'
+            raise ValueError(error)
         if not role['input']:
             error = 'Error: Missing input role parameter for chat inference.'
             raise ValueError(error)
@@ -63,7 +67,16 @@ class Strategy:
         self.call_stop:str = None
         self.call_tokens:int = None
         self.call_temperature:float = None
-        # Define iteration chat strategy
+        # Define iterative chat strategy
+        self.chat_prompt:str = None
+        self.chat_role = {
+            'prompt': None,
+            'input': None,
+            'output': None
+            }
+        self.chat_stop:str = None
+        self.chat_tokens:int = None
+        self.chat_temperature:float = None
 
     ## ============================= Load Method ============================= ##
     def load(self,path:str) -> None:
@@ -97,13 +110,30 @@ class Strategy:
                         self.call_stop = strategy.get('stop')
                         self.call_tokens = strategy.get('max_token')
                         self.call_temperature = strategy.get('temperature',0)
+                        # Necessray parameter check
                         role(self.call_role,False)
+                        necessary(self.call_tokens,self.call_stop)
                     case 'chat':
-                        pass
+                        prompt_path = strategy.get('prompt',None)
+                        if prompt_path:
+                            prompt = Path(prompt_path)
+                            try:
+                                self.chat_prompt = prompt.read_text('utf-8')
+                            except FileNotFoundError:
+                                error = 'Error: Prompt file not found in provided path.'
+                                raise FileNotFoundError(error)
+                        self.chat_role['prompt'] = strategy.get('role',{}).get('prompt')
+                        self.chat_role['input'] = strategy.get('role',{}).get('input')
+                        self.chat_role['output'] = strategy.get('role',{}).get('output')
+                        self.chat_stop = strategy.get('stop')
+                        self.chat_tokens = strategy.get('max_token')
+                        self.chat_temperature = strategy.get('temperature',0)
+                        # Key parameter check
+                        role(self.chat_role,True,prompt=self.chat_prompt)
+                        # Necessray parameter check
+                        necessary(self.chat_tokens,self.chat_stop)
             except KeyError:
                 raise KeyError('Error: Invalid strategy format.')
-        # Necessray parameter check
-        necessary(self.call_tokens,self.call_stop)
 
     ## ========================== Update Methods ========================== ##
     def call(self,
@@ -132,3 +162,37 @@ class Strategy:
             self.call_temperature = temperature
         # Necessray parameter check
         necessary(self.call_tokens,self.call_stop)
+
+    def chat(self,
+             prompt:str,
+             prompt_role:str,input_role:str,output_role:str,
+             stop:str,max_token:int,
+             temperature:float) -> None:
+        '''The method is defined for update inference strategy for chat.
+        Args:
+            prompt: A string indicate additional prompt for chat inference.
+            prompt_role: A string indicate the role of additional prompt.
+            input_role: A string indicate the role of input.
+            output_role: A string indicate the role of output.
+            stop: A string indicate where the model should stop generation.
+            max_token: A integrate indicate 
+                the max token number of model generation.
+            temperature: A float indicate the model inference temperature.
+        '''
+        # Update strategy parameters
+        if prompt != None:
+            self.chat_prompt = prompt
+        if prompt_role:
+            self.chat_role['prompt'] = prompt_role
+        if input_role:
+            self.chat_role['input'] = input_role
+        if output_role:
+            self.chat_role['output'] = output_role
+        if stop != None:
+            self.chat_stop = stop
+        if max_token != None:
+            self.chat_tokens = max_token
+        if temperature != None:
+            self.chat_temperature = temperature
+        # Necessary Parameter Check
+        necessary(self.chat_tokens,self.chat_stop)
