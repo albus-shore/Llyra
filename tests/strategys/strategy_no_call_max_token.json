@@ -1,0 +1,11 @@
+[
+    {
+    "type": "call",
+    "role":{
+        "input": "<|User|>",
+        "output": "<|Assistant|>"
+        },
+    "stop": "<|User|>",
+    "temperature": 0.6
+    }             
+]

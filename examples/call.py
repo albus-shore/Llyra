@@ -8,4 +8,4 @@ print(response)
 
 print(model.query)
 print(model.response)
-print(model.history)
+print(model.log.history)

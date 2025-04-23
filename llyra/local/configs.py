@@ -47,8 +47,10 @@ def necessary(strategy:str,format:str) -> None:
         warning += '\t\t Inference unavailiable without manual updating.'
         warn(warning,UserWarning)
     if not format:
-        warning = 'Warning: Missing chat format.'
-        warning += '\t\t Chat inference unavailiable without manual updating'
+        warning = 'Warning: Missing chat format.\n'
+        warning += '\t\t Chat inference may unavailiable '
+        warning += "when chat format not contain in model's metadate "
+        warning += "or not manual updating."
         warn(warning,UserWarning)
 
 
@@ -64,13 +66,14 @@ class Config:
         # Define default path to config file
         self.config = 'config/config.json'
         # Define config attributes
-        self.attributes = ('model',
-                      'directory',
-                      'strategy',
-                      'gpu',
-                      'format',
-                      'ram',
-                      'path',)
+        self.model:str = None
+        self.directory:str = None
+        self.strategy:str = None
+        self.format:str = None
+        self.gpu:bool = None
+        self.ram:bool = None
+        # Define path attribute
+        self.path:str = None
 
     ## ============================= Load Method ============================= ##
     def load(self,path:str=None) -> None:
@@ -94,8 +97,12 @@ class Config:
         else:
             config_dictionary:dict = json.loads(config_json)
         # Read config parameter
-        for attribute in self.attributes:
-            setattr(self,attribute,config_dictionary.get(attribute))
+        self.model = config_dictionary.get('model',None)
+        self.directory = config_dictionary.get('directory',None)
+        self.strategy = config_dictionary.get('strategy',None)
+        self.format = config_dictionary.get('format',None)
+        self.gpu = config_dictionary.get('gpu',False)
+        self.ram = config_dictionary.get('ram',False)
         # Critical parameters check
         if not self.model:
             error = 'Error: Missing model file name parameter.'
@@ -117,16 +124,16 @@ class Config:
                model:str,
                directory:str,
                strategy:str,
-               gpu:bool,
                format:str,
+               gpu:bool,
                ram:bool,) -> None:
         '''The method is defined for update config parameters with inputs.
         Args:
             model: A string indicate the name of model file
             directory: A string indicate the directory of model file
             strategy: A string indicate the path to the inference strategy file
-            gpu: A boolean indicate whether using GPU for inference acceleration
             format: A sting indicate the format of chat inference's input
+            gpu: A boolean indicate whether using GPU for inference acceleration
             ram: A boolean indicate whether keeping the model loaded in memory
         '''
         # Update parameter according to the input
@@ -138,16 +145,14 @@ class Config:
         if model or directory:
             self.path = self.directory + self.model + '.gguf'
         ## Update normal parameter
-        input_config = (strategy,
-                        gpu,
-                        format,
-                        ram)
-        normal_config = self.attributes[2:-1]
-        for value in input_config:
-            if value != None:
-                index = input_config.index(value)
-                attribute = normal_config[index]
-                setattr(self,attribute,value)
+        if strategy != None:
+            self.strategy = strategy
+        if format != None:
+            self.format = format
+        if gpu != None:
+            self.gpu = gpu
+        if ram != None:
+            self.ram = ram
         # Necessary parameters check
         necessary(self.strategy,
                   self.format)
@@ -176,8 +181,8 @@ class Config:
             'model': self.model,
             'directory': self.directory,
             'strategy': self.strategy,
-            'gpu': self.gpu,
             'format': self.format,
+            'gpu': self.gpu,
             'ram': self.ram
             }
         file_content = json.dumps(file_content)
