@@ -78,3 +78,11 @@ def test_iterate_method(prompt):
         ]
     prompt.iterate('user','Introduce yourself.',False)
     assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    prompt.iterate(None,'This is for test.',True)
+    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    prompt.iterate('user',None,True)
+    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    prompt.iterate(None,None,True)
+    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    prompt.iterate(None,None,False)
+    assert prompt.iteration == []
