@@ -8,7 +8,8 @@ def make(role:str,content:str) -> dict:
         A dictionary indicate the single prompt record in chat iteration.
     '''
     # Make single prompt dictionary
-    single_prompt = {role: content}
+    single_prompt = {'role':role,
+                     'content': content}
     # Return single prompt dictionary
     return single_prompt
 
