@@ -74,12 +74,14 @@ class Prompt():
         Args:
             role: A string indicate the role of the content.
             content: A sting indicate the content of the iteration record.
-            keep: A boolean indicate whether continue current chat iterarion.
+            keep: A boolean indicate whether continue last chat iterarion.
         '''
-        # Discriminate whether continue current chat iteration.
+        # Discriminate whether continue last chat iteration
         if not keep:
             self.iteration = []
-        # Make the prompt record dictionary
-        current_record = make(role=role,content=content)
-        # Append iteration record attribute
-        self.iteration.append(current_record)
+        # Discriminate whether make new iteration record
+        if role != None and content !=None:
+            # Make the prompt record dictionary
+            last_record = make(role=role,content=content)
+            # Append iteration record attribute
+            self.iteration.append(last_record)
