@@ -30,13 +30,13 @@ def test_chat_method_without_iteration(prompt):
     addition = 'This is for test.'
     output = prompt.chat(role=role,content=content,addition=addition)
     assert output == [
-        {'system': 'This is for test.'},
-        {'user': 'hello,there!'}
+        {'role': 'system','content': 'This is for test.'},
+        {'role': 'user', 'content': 'hello,there!'}
         ]
     assert prompt.iteration == []
     output = prompt.chat(role=role,content=content,addition=None)
     assert output == [
-        {'user': 'hello,there!'}
+        {'role': 'user', 'content': 'hello,there!'}
         ]
     assert prompt.iteration == []
 
@@ -45,8 +45,8 @@ def test_chat_method_with_iteration(prompt):
     Test whether the method can not affect the iteration history.
     And make promp for iterative chat inference properly.
     '''
-    prompt.iteration.append({'user': 'Hello, there!'})
-    prompt.iteration.append({'assistant': 'Greeting, how can I assistant you today?'})
+    prompt.iteration.append({'role': 'user', 'content': 'Hello, there!'})
+    prompt.iteration.append({'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'})
     role = {
         "prompt": "system",
         "input": "user",
@@ -56,33 +56,33 @@ def test_chat_method_with_iteration(prompt):
     addition = 'This is for test.'
     output = prompt.chat(role=role,content=content,addition=addition)
     assert output == [
-        {'user': 'Hello, there!'},
-        {'assistant': 'Greeting, how can I assistant you today?'},
-        {'system': 'This is for test.'},
-        {'user': 'hello,there!'}
+        {'role': 'user', 'content': 'Hello, there!'},
+        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'},
+        {'role': 'system', 'content': 'This is for test.'},
+        {'role': 'user', 'content': 'hello,there!'}
         ]
     assert prompt.iteration == [
-        {'user': 'Hello, there!'},
-        {'assistant': 'Greeting, how can I assistant you today?'},
+        {'role': 'user', 'content': 'Hello, there!'},
+        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'},
         ]
 
 ## =========================== Iterate Method Test =========================== ##
 def test_iterate_method(prompt):
     '''Teset whether the method can make iteration record properly.'''
     prompt.iterate('user','Hello, there!',True)
-    assert prompt.iteration == [{'user': 'Hello, there!'}]
+    assert prompt.iteration == [{'role': 'user', 'content': 'Hello, there!'}]
     prompt.iterate('assistant','Greeting, how can I assistant you today?',True)
     assert prompt.iteration == [
-        {'user': 'Hello, there!'},
-        {'assistant': 'Greeting, how can I assistant you today?'}
+        {'role': 'user', 'content': 'Hello, there!'},
+        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
         ]
     prompt.iterate('user','Introduce yourself.',False)
-    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    assert prompt.iteration == [{'role': 'user', 'content': 'Introduce yourself.'}]
     prompt.iterate(None,'This is for test.',True)
-    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    assert prompt.iteration == [{'role': 'user', 'content': 'Introduce yourself.'}]
     prompt.iterate('user',None,True)
-    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    assert prompt.iteration == [{'role': 'user', 'content': 'Introduce yourself.'}]
     prompt.iterate(None,None,True)
-    assert prompt.iteration == [{'user': 'Introduce yourself.'}]
+    assert prompt.iteration == [{'role': 'user', 'content': 'Introduce yourself.'}]
     prompt.iterate(None,None,False)
     assert prompt.iteration == []
