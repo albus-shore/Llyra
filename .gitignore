@@ -3,6 +3,7 @@
 
 # Ignore Python Cache File
 __pycache__/
+.pytest_cache/
 
 # Ignore build file
 dist/

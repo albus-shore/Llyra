@@ -1,13 +1,4 @@
-[{
-    "type": "call",
-    "role":{
-        "input": "<|User|>",
-        "output": "<|Assistant|>"
-        },
-    "stop": "<|User|>",
-    "max_token": 128e3,
-    "temperature": 0.6
-},
+[
 {
     "type": "chat",
     "role": {
@@ -16,7 +7,6 @@
         "output": "assistant"
         },
     "prompt": "tests/strategys/prompt.txt",
-    "stop": "<|User|>",
     "max_token": 128e3,
     "temperature": 0.6
 }]
