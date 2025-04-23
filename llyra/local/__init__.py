@@ -44,7 +44,7 @@ class Model:
         self.model = Llama(model_path=self.config.path,
                            n_gpu_layers=gpu(self.config.gpu),
                            chat_format=self.config.format,
-                           use_mlock=self.config.ram or False,
+                           use_mlock=self.config.ram,
                            n_ctx=0,
                            verbose=False)
         # Initialize current inference attributea
@@ -71,12 +71,10 @@ class Model:
         self.strategy.call(input_role=input_role,output_role=output_role,
                            stop=stop,max_token=max_token,
                            temperature=temperature)
-        # Set prompt object necessary attribute
-        self.prompt.set(self.strategy.call_role)
         # Get input content
         self.query = message
         # Make prompt
-        prompt = self.prompt.call(self.query)
+        prompt = self.prompt.call(self.strategy.call_role,self.query)
         # Fulfill model inference
         self.response = self.model.create_completion(prompt=prompt,
             stop=self.strategy.call_stop,
