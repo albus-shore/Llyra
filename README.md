@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/albus-shore/Llyra/main/assets/logo.png" width="300" alt="Llyra Logo"/>
+  <img src="./assets/logo.png" width="300" alt="Llyra Logo"/>
 </p>
 
 <h1 align="center">Llyra</h1>
@@ -15,14 +15,14 @@
 - **Minimal, Configurable Inference**  
   Load prompts, model parameters, and tools from external files.
 
-- **Hybrid Backend Support (Planned)**  
-  Use local `llama-cpp-python` or connect to a remote Ollama endpoint via the same interface.
-
-- **Prompt Engineering Friendly (Planned)**  
+- **Prompt Engineering Friendly**  
   Easily manage system prompts, roles, and chat formats through external `.json` or `.txt` files.
 
-- **Optional RAG Integration (Planned)**  
+- **Optional RAG Integration (Coming Soon)**  
   Native support for Weaviate-based retrieval-augmented generation.
+
+- **Hybrid Backend Support (Planned)**  
+  Use local `llama-cpp-python` or connect to a remote Ollama endpoint via the same interface.
 
 - **Tool Support (Planned)**  
   Enable LLMs to use JSON-defined tools (function-calling style) with one argument.
@@ -34,39 +34,47 @@
 Llyra does **not** bundle any backend inference engines. You must install them manually according to your needs:
 
 **Required (choose one):**
-- For local models: https://github.com/abetlen/llama-cpp-python
-- For remote inference: any Ollama-compatible API
+- For local models: 
+  [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
+- For remote inference: 
+  **any Ollama-compatible API**
 
 **Optional:**
-- For RAG: `pip install weaviate-client`
+- For RAG: 
+  `pip install weaviate-client`
 
 ---
 
 ## 📦 Installation
 
 ```bash
-pip install https://github.com/albus-shore/Llyra/releases/download/version/package_file_name
+pip install https://github.com/albus-shore/Llyra/releases/download/v0.1.1/llyra-0.1.1-py3-none-any.whl
 ```
 
 ---
 
 ## 🚀 Quickstart
 
-```python
-from llyra import Model
+1. Make directary `config/` in your project root.
+2. Add `config.json` and `stategy.json` to `config/` directory.
+3. Make directary `models/` in your project root.
+4. Rename your **GGUF** file as `model.gguf` and place it under `models/` directory.
+4. Make your first iterative chat inference with follwing example:
+  ```python
+  from llyra import Model
 
-model = Model()
+  model = Model()
 
-response = model.call("What is the capital of Canada?")
+  response = model.chat('Evening!',keep=True)
 
-print(response)
-```
+  print(response)
+  ```
 
 ---
 
 ## 🛠 Configuration Example
 
-**config/config.json**
+**config.json**
 
 ```json
 {
@@ -74,22 +82,23 @@ print(response)
     "directory": "models/",
     "strategy": "config/strategy.json",
     "gpu": false,
-    "format": "llama-2"
+    "format": null,
+    "ram": false
 }
 ```
 
-**config/strategy.json**:
+**strategy.json**:
 
 ```json
 [{
-  "type": "call",
-  "role": {
-      "input": "<|User|>",
-      "output": "<|Assistant|>"
-    },
-  "stop": "<|User|>",
-  "max_tokens": 512,
-  "temperature": 0.7
+    "type": "chat",
+    "role": {
+        "input": "user",
+        "output": "assistant"
+        },
+    "stop": "<|User|>",
+    "max_token": 128e3,
+    "temperature": 0.6
 }]
 ```
 
@@ -99,10 +108,10 @@ print(response)
 
 | Phase | Feature                                  | Status      |
 |-------|------------------------------------------|-------------|
-| 1     | Minimal `llama-cpp-python` local chat    | 🔄 Ongoing   |
-| 2     | Predefined prompts via `.txt` / `.json`  | ⏳ Planned   |
-| 3     | Ollama remote API support                | ⏳ Planned   |
-| 4     | Weaviate RAG support                     | ⏳ Planned   |
+| 1     | Minimal `llama-cpp-python` local chat    | ✅ Finished  |
+| 2     | Predefined prompts via `.txt` / `.json`  | ✅ Finished  |
+| 3     | Weaviate RAG support                     | 🔄 Ongoing   |
+| 4     | Ollama remote API support                | ⏳ Planned   |
 | 5     | Tool/function-calling via JSON           | ⏳ Planned   |
 
 ---
