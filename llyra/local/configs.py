@@ -1,6 +1,5 @@
-from pathlib import Path
 from warnings import warn
-import json
+from ..configs import Config
 
 ### ============================= Inside Functions ============================= ###
 ## ========================== Name Function ========================== ##
@@ -19,28 +18,12 @@ def name(filename:str) -> str:
     # Return model file name value
     return name
 
-## ========================= Folder Function ========================= ##
-def folder(directory:str) -> str:
-    '''The function is defined for struct directory of model file.
-    Args:
-        directory: A string indicate the folder of model file placed.
-    Returns:
-       folder: A string indicate the folder of model file placed with '/'.
-    '''
-    # Discriminate whether directory of model file end with '/'
-    if directory.endswith('/'):
-        folder = directory
-    else:
-        folder = directory + '/'
-    # Return model file folder value
-    return folder
-
 ## =============== Necessary Parameters Check Function =============== ##
 def necessary(strategy:str,format:str) -> None:
-    '''The function is defined for check necessary config parameters
+    '''The function is defined for check necessary config parameters.
     Args:
-        strategy: A string indicate the path to the inference strategy file
-        format: A sting indicate the format of chat inference's input
+        strategy: A string indicate the path to the inference strategy file.
+        format: A sting indicate the format of chat inference's input.
     '''
     if not strategy:
         warning = 'Warning: Missing inference strategy file.\n'
@@ -55,16 +38,13 @@ def necessary(strategy:str,format:str) -> None:
 
 
 ### =============================== Expose Class =============================== ###
-class Config:
-    '''The class is defined for work with the toolkit's configurations.'''
+class ConfigLocal(Config):
+    '''The class is defined for work with configurations of local inference.'''
     ## ========================== Initialize Method ========================== ##
-    def __init__(self) -> object:
-        '''The method is defined for initialize Config class object.
-        Returns:
-            config: A object indicate config parameters and operation.
-        '''
-        # Define default path to config file
-        self.config = 'config/config.json'
+    def __init__(self) -> None:
+        '''The method is defined for initialize ConfigLocal class object.'''
+        # Initialize parent class
+        super().__init__()
         # Define config attributes
         self.model:str = None
         self.directory:str = None
@@ -77,32 +57,19 @@ class Config:
 
     ## ============================= Load Method ============================= ##
     def load(self,path:str=None) -> None:
-        '''The method is defined for load toolkit config file.
+        '''The method is defined for load config file for local inference.
         Args:
             path: A string indicate the path to the config file.
         '''
-        # Discriminate whether changing defualt config file path
-        if path:
-            self.config = path
         # Load config file
-        config_path:object = Path(self.config)
-        try:
-            config_json:str = config_path.read_text(encoding='utf-8')
-        except FileNotFoundError:
-            if path:
-                error = 'Error: Config file not found in provided path.'
-            else:
-                error = 'Error: Missing config file.'
-            raise FileNotFoundError(error)
-        else:
-            config_dictionary:dict = json.loads(config_json)
+        config = super()._load(path=path)
         # Read config parameter
-        self.model = config_dictionary.get('model',None)
-        self.directory = config_dictionary.get('directory',None)
-        self.strategy = config_dictionary.get('strategy',None)
-        self.format = config_dictionary.get('format',None)
-        self.gpu = config_dictionary.get('gpu',False)
-        self.ram = config_dictionary.get('ram',False)
+        self.model = config.get('model',None)
+        self.directory = config.get('directory',None)
+        self.strategy = config.get('strategy',None)
+        self.format = config.get('format',None)
+        self.gpu = config.get('gpu',False)
+        self.ram = config.get('ram',False)
         # Critical parameters check
         if not self.model:
             error = 'Error: Missing model file name parameter.'
@@ -115,7 +82,7 @@ class Config:
                   self.format)
         # Fix possible invalid attribute
         self.model = name(self.model)
-        self.directory = folder(self.directory)
+        self.directory = super()._path(self.directory)
         # Make model file path
         self.path = self.directory + self.model + '.gguf'
 
@@ -129,19 +96,19 @@ class Config:
                ram:bool,) -> None:
         '''The method is defined for update config parameters with inputs.
         Args:
-            model: A string indicate the name of model file
-            directory: A string indicate the directory of model file
-            strategy: A string indicate the path to the inference strategy file
-            format: A sting indicate the format of chat inference's input
-            gpu: A boolean indicate whether using GPU for inference acceleration
-            ram: A boolean indicate whether keeping the model loaded in memory
+            model: A string indicate the name of model file.
+            directory: A string indicate the directory of model file.
+            strategy: A string indicate the path to the inference strategy file.
+            format: A sting indicate the format of chat inference's input.
+            gpu: A boolean indicate whether using GPU for inference acceleration.
+            ram: A boolean indicate whether keeping the model loaded in memory.
         '''
         # Update parameter according to the input
         ## Update key parameters
         if model:
             self.model = name(model)
         if directory:
-            self.directory = folder(directory)
+            self.directory = super()._path(directory)
         if model or directory:
             self.path = self.directory + self.model + '.gguf'
         ## Update normal parameter
@@ -160,24 +127,8 @@ class Config:
     ## ============================ Write Method ============================ ##
     def write(self) -> None:
         '''The method is defined for writing current config into file.'''
-        # Initialize new config file path
-        file_path = Path('config/config.json')
-        # Discriminate whether the file name has been occupied
-        if file_path.exists():
-            alarm = "Alarm: There is a existed config.json under '.config/'."
-            alarm += "\n\t  This operation will rewrite all content in it."
-            alarm += "\n\t  Send 'w' to confirm operation, "
-            alarm += "Send 'q' to terminate process."
-            while True:
-                action = input(alarm)
-                if action.lower() == 'w':
-                    break
-                elif action.lower() == 'q':
-                    raise FileExistsError()
-                else:
-                    print('Invalid command.')
         # Prepare content
-        file_content = {
+        content = {
             'model': self.model,
             'directory': self.directory,
             'strategy': self.strategy,
@@ -185,8 +136,4 @@ class Config:
             'gpu': self.gpu,
             'ram': self.ram
             }
-        file_content = json.dumps(file_content)
-        # Write file
-        file_path.write_text(file_content)
-        # Terminal Information
-        print("Current config has been write into '.config/config.json'.")
+        super()._write(content=content)
