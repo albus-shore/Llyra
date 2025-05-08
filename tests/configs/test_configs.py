@@ -1,16 +1,16 @@
 import pytest
 from unittest.mock import patch,MagicMock
-from llyra.local.configs import Config
+from llyra.local.configs import ConfigLocal
 from pathlib import Path
 
 @pytest.fixture
 def config():
-    config = Config()
+    config = ConfigLocal()
     return config
 
 @pytest.fixture
 def loaded_config():
-    loaded_config = Config()
+    loaded_config = ConfigLocal()
     loaded_config.load('tests/configs/config_normal.json')
     return loaded_config
 
