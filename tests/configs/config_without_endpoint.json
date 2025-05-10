@@ -1,0 +1,6 @@
+{
+    "url": "http://localhost:11434/",
+    "model": "llama-2",
+    "strategy": "config/config-remote.json",
+    "stream": false
+}
