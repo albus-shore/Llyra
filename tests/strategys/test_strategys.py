@@ -291,51 +291,31 @@ def test_update_chat_strategy(strategy):
 
 def test_update_chat_strategy_with_empty_prompt_role(strategy):
     '''Test whether method refused to update prompt role when its input is empty.'''
-    strategy.update_chat(prompt='You are a kind assistant.',
+    error = 'Error: Missing prompt role parameter for chat inference.'
+    with pytest.raises(ValueError,match=error):
+        strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='',input_role='user',output_role='assistant',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat.prompt == 'You are a kind assistant.'
-    assert strategy.chat.role == {
-        'prompt': None,
-        'input': 'user',
-        'output': 'assistant'
-        }
-    assert strategy.chat.stop == '<|end_of_sentence|>'
-    assert strategy.chat.tokens == 128
-    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_with_empty_input_role(strategy):
     '''Test whether method refused to update input role when its input is empty.'''
-    strategy.update_chat(prompt='You are a kind assistant.',
+    error = 'Error: Missing input role parameter for chat inference.'
+    with pytest.raises(ValueError,match=error):
+        strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='system',input_role='',output_role='assistant',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat.prompt == 'You are a kind assistant.'
-    assert strategy.chat.role == {
-        'prompt': 'system',
-        'input': None,
-        'output': 'assistant'
-        }
-    assert strategy.chat.stop == '<|end_of_sentence|>'
-    assert strategy.chat.tokens == 128
-    assert strategy.chat.temperature == 1
+
 
 def test_update_chat_strategy_with_empty_output_role(strategy):
     '''Test whether method refused to update output role when its input is empty.'''
-    strategy.update_chat(prompt='You are a kind assistant.',
+    error = 'Error: Missing output role parameter for chat inference.'
+    with pytest.raises(ValueError,match=error):
+        strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='system',input_role='user',output_role='',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat.prompt == 'You are a kind assistant.'
-    assert strategy.chat.role == {
-        'prompt': 'system',
-        'input': 'user',
-        'output': None
-        }
-    assert strategy.chat.stop == '<|end_of_sentence|>'
-    assert strategy.chat.tokens == 128
-    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_without_max_token(strategy):
     '''Test whether method show warning without max_token.'''
@@ -344,7 +324,7 @@ def test_update_chat_strategy_without_max_token(strategy):
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
         strategy.update_chat(prompt='You are a kind assistant.',
-                      prompt_role='',input_role='user',output_role='assistant',
+                      prompt_role='system',input_role='user',output_role='assistant',
                       stop='<|end_of_sentence|>',max_token=None,
                       temperature=1)
         
@@ -355,6 +335,6 @@ def test_update_call_strategy_without_stop(strategy):
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
         strategy.update_chat(prompt='You are a kind assistant.',
-                      prompt_role='',input_role='user',output_role='assistant',
+                      prompt_role='system',input_role='user',output_role='assistant',
                       stop=None,max_token=128,
                       temperature=1)
