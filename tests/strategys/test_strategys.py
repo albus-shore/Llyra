@@ -1,52 +1,51 @@
 import pytest
-from llyra.local.strategys import Strategy
-import warnings,json
+from llyra.local.strategys import StrategyLocal
 
 @pytest.fixture
 def strategy():
-    strategy = Strategy()
+    strategy = StrategyLocal()
     return strategy
 
 ### ============================== Initialize Test ============================== ###
 def test_class_initialize(strategy):
     '''Test whether the class can be initialized properly.'''
-    assert strategy.call_role == {
+    assert strategy.call.role == {
         'input': None,
         'output': None
         }
-    assert strategy.call_stop == None
-    assert strategy.call_tokens == None
-    assert strategy.call_temperature == None
-    assert strategy.chat_prompt == None
-    assert strategy.chat_role == {
+    assert strategy.call.stop == None
+    assert strategy.call.tokens == None
+    assert strategy.call.temperature == None
+    assert strategy.chat.prompt == None
+    assert strategy.chat.role == {
         'prompt': None,
         'input': None,
         'output': None
         }
-    assert strategy.chat_stop == None
-    assert strategy.chat_tokens == None
-    assert strategy.chat_temperature == None
+    assert strategy.chat.stop == None
+    assert strategy.chat.tokens == None
+    assert strategy.chat.temperature == None
 
 ### ============================= Load Method Test ============================= ###
 def test_load_strategy_file(strategy):
     '''Test whether method load strategy file form path properly.'''
     strategy.load('tests/strategys/strategy_normal.json')
-    assert strategy.call_role == {
+    assert strategy.call.role == {
         'input': "<|User|>",
         'output': "<|Assistant|>"
         }
-    assert strategy.call_stop == "<|User|>"
-    assert strategy.call_tokens == 128e3
-    assert strategy.call_temperature == 0.6
-    assert strategy.chat_prompt == 'This is used for test.'
-    assert strategy.chat_role == {
+    assert strategy.call.stop == "<|User|>"
+    assert strategy.call.tokens == 128e3
+    assert strategy.call.temperature == 0.6
+    assert strategy.chat.prompt == 'This is used for test.'
+    assert strategy.chat.role == {
         'prompt': 'system',
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|User|>'
-    assert strategy.chat_tokens == 128e3
-    assert strategy.chat_temperature == 0.6
+    assert strategy.chat.stop == '<|User|>'
+    assert strategy.chat.tokens == 128e3
+    assert strategy.chat.temperature == 0.6
 
 def test_load_strategy_with_wrong_path(strategy):
     '''Test whether method raise exception when file path error. '''
@@ -75,13 +74,13 @@ def test_load_strategy_with_no_call_input_role(strategy):
     warning = 'Warning: Missing input role parameter for call inference.'
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_call_input_role.json')
-        assert strategy.call_role == {
+        assert strategy.call.role == {
             'input': None,
             'output': "<|Assistant|>"
             }
-        assert strategy.call_stop == "<|User|>"
-        assert strategy.call_tokens == 128e3
-        assert strategy.call_temperature == 0.6
+        assert strategy.call.stop == "<|User|>"
+        assert strategy.call.tokens == 128e3
+        assert strategy.call.temperature == 0.6
 
 def test_load_strategy_with_no_call_output_role(strategy):
     '''
@@ -91,13 +90,13 @@ def test_load_strategy_with_no_call_output_role(strategy):
     warning = 'Warning: Missing output role parameter for call inference.'
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_call_output_role.json')
-        assert strategy.call_role == {
+        assert strategy.call.role == {
             'input': "<|User|>",
             'output': None
             }
-        assert strategy.call_stop == "<|User|>"
-        assert strategy.call_tokens == 128e3
-        assert strategy.call_temperature == 0.6
+        assert strategy.call.stop == "<|User|>"
+        assert strategy.call.tokens == 128e3
+        assert strategy.call.temperature == 0.6
 
 def test_load_strategy_with_no_call_max_token(strategy):
     '''
@@ -109,13 +108,13 @@ def test_load_strategy_with_no_call_max_token(strategy):
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_call_max_token.json')
-        assert strategy.call_role == {
+        assert strategy.call.role == {
             'input': "<|User|>",
             'output': "<|Assistant|>"
             }
-        assert strategy.call_stop == "<|User|>"
-        assert strategy.call_tokens == None
-        assert strategy.call_temperature == 0.6
+        assert strategy.call.stop == "<|User|>"
+        assert strategy.call.tokens == None
+        assert strategy.call.temperature == 0.6
 
 def test_load_strategy_with_call_no_stop(strategy):
     '''
@@ -127,38 +126,38 @@ def test_load_strategy_with_call_no_stop(strategy):
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_call_stop.json')
-        assert strategy.call_role == {
+        assert strategy.call.role == {
             'input': "<|User|>",
             'output': "<|Assistant|>"
             }
-        assert strategy.call_stop == None
-        assert strategy.call_tokens == 128e3
-        assert strategy.call_temperature == 0.6
+        assert strategy.call.stop == None
+        assert strategy.call.tokens == 128e3
+        assert strategy.call.temperature == 0.6
 
 def test_load_strategy_with_no_call_temperature(strategy):
     '''Test whether method load call strategy witout temperature from path properly.'''
     strategy.load('tests/strategys/strategy_no_call_temperature.json')
-    assert strategy.call_role == {
+    assert strategy.call.role == {
         'input': "<|User|>",
         'output': "<|Assistant|>"
         }
-    assert strategy.call_stop == "<|User|>"
-    assert strategy.call_tokens == 128e3
-    assert strategy.call_temperature == 0
+    assert strategy.call.stop == "<|User|>"
+    assert strategy.call.tokens == 128e3
+    assert strategy.call.temperature == 0
 
 ## ========================== Load Chat Strategy ========================== ##
 def test_load_strategy_with_no_chat_prompt(strategy):
     '''Test whether method load chat strategy without prompt from path properly.'''
     strategy.load('tests/strategys/strategy_no_chat_prompt.json')
-    assert strategy.chat_prompt == None
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == None
+    assert strategy.chat.role == {
         'prompt': None,
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|User|>'
-    assert strategy.chat_tokens == 128e3
-    assert strategy.chat_temperature == 0.6
+    assert strategy.chat.stop == '<|User|>'
+    assert strategy.chat.tokens == 128e3
+    assert strategy.chat.temperature == 0.6
 
 def test_load_strategy_with_error_chat_prompt(strategy):
     '''Test whether method raise exception when prompt path error.'''
@@ -194,15 +193,15 @@ def test_load_strategy_with_no_chat_max_token(strategy):
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_chat_max_token.json')
-        assert strategy.chat_prompt == 'This is used for test.'
-        assert strategy.chat_role == {
+        assert strategy.chat.prompt == 'This is used for test.'
+        assert strategy.chat.role == {
             'prompt': 'system',
             'input': 'user',
             'output': 'assistant'
             }
-        assert strategy.chat_stop == '<|User|>'
-        assert strategy.chat_tokens == None
-        assert strategy.chat_temperature == 0.6
+        assert strategy.chat.stop == '<|User|>'
+        assert strategy.chat.tokens == None
+        assert strategy.chat.temperature == 0.6
 
 def test_load_strategy_with_chat_no_stop(strategy):
     '''
@@ -214,44 +213,44 @@ def test_load_strategy_with_chat_no_stop(strategy):
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
         strategy.load('tests/strategys/strategy_no_chat_stop.json')
-        assert strategy.chat_prompt == 'This is used for test.'
-        assert strategy.chat_role == {
+        assert strategy.chat.prompt == 'This is used for test.'
+        assert strategy.chat.role == {
             'prompt': 'system',
             'input': 'user',
             'output': 'assistant'
             }
-        assert strategy.chat_stop == None
-        assert strategy.chat_tokens == 128e3
-        assert strategy.chat_temperature == 0.6
+        assert strategy.chat.stop == None
+        assert strategy.chat.tokens == 128e3
+        assert strategy.chat.temperature == 0.6
 
 def test_load_strategy_with_no_chat_temperature(strategy):
     '''Test whether method load call strategy witout temperature from path properly.'''
     strategy.load('tests/strategys/strategy_no_chat_temperature.json')
-    assert strategy.chat_prompt == 'This is used for test.'
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == 'This is used for test.'
+    assert strategy.chat.role == {
         'prompt': 'system',
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|User|>'
-    assert strategy.chat_tokens == 128e3
-    assert strategy.chat_temperature == 0
+    assert strategy.chat.stop == '<|User|>'
+    assert strategy.chat.tokens == 128e3
+    assert strategy.chat.temperature == 0
 
 
 ### ============================ Update Method Test ============================ ###
 ## ========================== Update Call Strategy ========================== ##
 def test_update_call_strategy(strategy):
     '''Test whether method update call strategy properly.'''
-    strategy.call(input_role='user',output_role='assistant',
+    strategy.update_call(input_role='user',output_role='assistant',
                   stop='user',max_token=128,
                   temperature=0.6)
-    assert strategy.call_role == {
+    assert strategy.call.role == {
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.call_stop == 'user'
-    assert strategy.call_tokens == 128
-    assert strategy.call_temperature == 0.6
+    assert strategy.call.stop == 'user'
+    assert strategy.call.tokens == 128
+    assert strategy.call.temperature == 0.6
 
 def test_update_call_strategy_without_max_token(strategy):
     '''Test whether method show warning without max_token.'''
@@ -259,7 +258,7 @@ def test_update_call_strategy_without_max_token(strategy):
     warning += 'the max generation token number will be set '
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.call(input_role='user',output_role='assistant',
+        strategy.update_call(input_role='user',output_role='assistant',
                       stop='user',max_token=0,
                       temperature=0.6)
 
@@ -269,74 +268,74 @@ def test_update_call_strategy_without_stop(strategy):
     warning += "inference won't stop "
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
-            strategy.call(input_role='user',output_role='assistant',
+            strategy.update_call(input_role='user',output_role='assistant',
                           max_token=128,stop='',
                           temperature=0.6)
 
 ## ========================== Update Chat Strategy ========================== ##
 def test_update_chat_strategy(strategy):
     '''Test whether method update chat strategy properly.'''
-    strategy.chat(prompt='You are a kind assistant.',
+    strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='system',input_role='user',output_role='assistant',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat_prompt == 'You are a kind assistant.'
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == 'You are a kind assistant.'
+    assert strategy.chat.role == {
         'prompt': 'system',
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|end_of_sentence|>'
-    assert strategy.chat_tokens == 128
-    assert strategy.chat_temperature == 1
+    assert strategy.chat.stop == '<|end_of_sentence|>'
+    assert strategy.chat.tokens == 128
+    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_with_empty_prompt_role(strategy):
     '''Test whether method refused to update prompt role when its input is empty.'''
-    strategy.chat(prompt='You are a kind assistant.',
+    strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='',input_role='user',output_role='assistant',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat_prompt == 'You are a kind assistant.'
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == 'You are a kind assistant.'
+    assert strategy.chat.role == {
         'prompt': None,
         'input': 'user',
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|end_of_sentence|>'
-    assert strategy.chat_tokens == 128
-    assert strategy.chat_temperature == 1
+    assert strategy.chat.stop == '<|end_of_sentence|>'
+    assert strategy.chat.tokens == 128
+    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_with_empty_input_role(strategy):
     '''Test whether method refused to update input role when its input is empty.'''
-    strategy.chat(prompt='You are a kind assistant.',
+    strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='system',input_role='',output_role='assistant',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat_prompt == 'You are a kind assistant.'
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == 'You are a kind assistant.'
+    assert strategy.chat.role == {
         'prompt': 'system',
         'input': None,
         'output': 'assistant'
         }
-    assert strategy.chat_stop == '<|end_of_sentence|>'
-    assert strategy.chat_tokens == 128
-    assert strategy.chat_temperature == 1
+    assert strategy.chat.stop == '<|end_of_sentence|>'
+    assert strategy.chat.tokens == 128
+    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_with_empty_output_role(strategy):
     '''Test whether method refused to update output role when its input is empty.'''
-    strategy.chat(prompt='You are a kind assistant.',
+    strategy.update_chat(prompt='You are a kind assistant.',
                   prompt_role='system',input_role='user',output_role='',
                   stop='<|end_of_sentence|>',max_token=128,
                   temperature=1)
-    assert strategy.chat_prompt == 'You are a kind assistant.'
-    assert strategy.chat_role == {
+    assert strategy.chat.prompt == 'You are a kind assistant.'
+    assert strategy.chat.role == {
         'prompt': 'system',
         'input': 'user',
         'output': None
         }
-    assert strategy.chat_stop == '<|end_of_sentence|>'
-    assert strategy.chat_tokens == 128
-    assert strategy.chat_temperature == 1
+    assert strategy.chat.stop == '<|end_of_sentence|>'
+    assert strategy.chat.tokens == 128
+    assert strategy.chat.temperature == 1
 
 def test_update_chat_strategy_without_max_token(strategy):
     '''Test whether method show warning without max_token.'''
@@ -344,7 +343,7 @@ def test_update_chat_strategy_without_max_token(strategy):
     warning += 'the max generation token number will be set '
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.chat(prompt='You are a kind assistant.',
+        strategy.update_chat(prompt='You are a kind assistant.',
                       prompt_role='',input_role='user',output_role='assistant',
                       stop='<|end_of_sentence|>',max_token=None,
                       temperature=1)
@@ -355,7 +354,7 @@ def test_update_call_strategy_without_stop(strategy):
     warning += "inference won't stop "
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
-        strategy.chat(prompt='You are a kind assistant.',
+        strategy.update_chat(prompt='You are a kind assistant.',
                       prompt_role='',input_role='user',output_role='assistant',
                       stop=None,max_token=128,
                       temperature=1)
