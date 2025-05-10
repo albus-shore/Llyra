@@ -125,14 +125,8 @@ class StrategyLocal(Strategy):
             temperature: A float indicate the model inference temperature.
         '''
         # Update strategy parameters
-        if prompt != None:
-            self.chat.prompt = prompt
-        if prompt_role:
-            self.chat.role['prompt'] = prompt_role
-        if input_role:
-            self.chat.role['input'] = input_role
-        if output_role:
-            self.chat.role['output'] = output_role
+        self.chat.update(prompt,
+                         prompt_role,input_role,output_role)
         if stop != None:
             self.chat.stop = stop
         if max_token != None:
