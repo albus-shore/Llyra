@@ -38,13 +38,10 @@ def check_necessary(max_token:int,stop:str) -> None:
 
 ### =============================== Expose Class =============================== ###
 class StrategyLocal(Strategy):
-    '''The class is defind for work with model inference strategies.'''
+    '''The class is defind for work with inference strategies of local inference.'''
     ## ========================== Initialize Method ========================== ##
-    def __init__(self) -> object:
-        '''The method is defined for initialize Strategy class object.
-        Returns:
-            strategy: A object indicate inference strategy.
-        '''
+    def __init__(self) -> None:
+        '''The method is defined for initialize StrategyLocal class object.'''
         # Initialize parent class
         super().__init__()
         # Define single call strategy
@@ -62,7 +59,7 @@ class StrategyLocal(Strategy):
 
     ## ============================= Load Method ============================= ##
     def load(self,path:str) -> None:
-        '''The method is defined for load inference strategy file.
+        '''The method is defined for load strategy file for local inference.
         Args:
             path: A string indicate the path to the strategy file.
         '''
