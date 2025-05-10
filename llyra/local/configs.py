@@ -19,7 +19,7 @@ def name(filename:str) -> str:
     return name
 
 ## =============== Necessary Parameters Check Function =============== ##
-def necessary(strategy:str,format:str) -> None:
+def check_necessary(strategy:str,format:str) -> None:
     '''The function is defined for check necessary config parameters.
     Args:
         strategy: A string indicate the path to the inference strategy file.
@@ -62,14 +62,14 @@ class ConfigLocal(Config):
             path: A string indicate the path to the config file.
         '''
         # Load config file
-        config = super()._load(path=path)
+        super()._load(path=path)
         # Read config parameter
-        self.model = config.get('model',None)
-        self.directory = config.get('directory',None)
-        self.strategy = config.get('strategy',None)
-        self.format = config.get('format',None)
-        self.gpu = config.get('gpu',False)
-        self.ram = config.get('ram',False)
+        self.model = self._config.get('model',None)
+        self.directory = self._config.get('directory',None)
+        self.strategy = self._config.get('strategy',None)
+        self.format = self._config.get('format',None)
+        self.gpu = self._config.get('gpu',False)
+        self.ram = self._config.get('ram',False)
         # Critical parameters check
         if not self.model:
             error = 'Error: Missing model file name parameter.'
@@ -78,11 +78,10 @@ class ConfigLocal(Config):
             error = 'Error: Missing model file directory parameter.'
             raise IndexError(error)
         # Necessary parameters check
-        necessary(self.strategy,
-                  self.format)
+        check_necessary(self.strategy,self.format)
         # Fix possible invalid attribute
         self.model = name(self.model)
-        self.directory = super()._path(self.directory)
+        self.directory = super().path(self.directory)
         # Make model file path
         self.path = self.directory + self.model + '.gguf'
 
@@ -108,7 +107,7 @@ class ConfigLocal(Config):
         if model:
             self.model = name(model)
         if directory:
-            self.directory = super()._path(directory)
+            self.directory = super().path(directory)
         if model or directory:
             self.path = self.directory + self.model + '.gguf'
         ## Update normal parameter
@@ -121,8 +120,7 @@ class ConfigLocal(Config):
         if ram != None:
             self.ram = ram
         # Necessary parameters check
-        necessary(self.strategy,
-                  self.format)
+        check_necessary(self.strategy,self.format)
         
     ## ============================ Write Method ============================ ##
     def write(self) -> None:
