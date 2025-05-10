@@ -29,7 +29,7 @@ def test_class_initialize(strategy):
 ### ============================= Load Method Test ============================= ###
 def test_load_strategy_file(strategy):
     '''Test whether method load strategy file form path properly.'''
-    strategy.load('tests/strategys/strategy_normal.json')
+    strategy.load('tests/strategys/local/strategy_normal.json')
     assert strategy.call.role == {
         'input': "<|User|>",
         'output': "<|Assistant|>"
@@ -57,13 +57,13 @@ def test_load_strategy_with_invalid_format(strategy):
     '''Test whether method raise excepetion when strategy format error.'''
     error = 'Error: Stratgy should be a list.'
     with pytest.raises(IsADirectoryError,match=error):
-        strategy.load('tests/strategys/strategy_format_error.json')
+        strategy.load('tests/strategys/local/strategy_format_error.json')
 
 def test_load_strategy_with_missing_type(strategy):
     '''Test whether method raise excepetion when missing keys.'''
     error = 'Error: Invalid strategy format.'
     with pytest.raises(KeyError,match=error):
-        strategy.load('tests/strategys/strategy_missing_type.json')
+        strategy.load('tests/strategys/local/strategy_missing_type.json')
 
 ## ========================== Load Call Strategy ========================== ##
 def test_load_strategy_with_no_call_input_role(strategy):
@@ -73,7 +73,7 @@ def test_load_strategy_with_no_call_input_role(strategy):
     '''
     warning = 'Warning: Missing input role parameter for call inference.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_call_input_role.json')
+        strategy.load('tests/strategys/local/strategy_no_call_input_role.json')
         assert strategy.call.role == {
             'input': None,
             'output': "<|Assistant|>"
@@ -89,7 +89,7 @@ def test_load_strategy_with_no_call_output_role(strategy):
     '''
     warning = 'Warning: Missing output role parameter for call inference.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_call_output_role.json')
+        strategy.load('tests/strategys/local/strategy_no_call_output_role.json')
         assert strategy.call.role == {
             'input': "<|User|>",
             'output': None
@@ -107,7 +107,7 @@ def test_load_strategy_with_no_call_max_token(strategy):
     warning += 'the max generation token number will be set '
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_call_max_token.json')
+        strategy.load('tests/strategys/local/strategy_no_call_max_token.json')
         assert strategy.call.role == {
             'input': "<|User|>",
             'output': "<|Assistant|>"
@@ -125,7 +125,7 @@ def test_load_strategy_with_call_no_stop(strategy):
     warning += "inference won't stop "
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_call_stop.json')
+        strategy.load('tests/strategys/local/strategy_no_call_stop.json')
         assert strategy.call.role == {
             'input': "<|User|>",
             'output': "<|Assistant|>"
@@ -136,7 +136,7 @@ def test_load_strategy_with_call_no_stop(strategy):
 
 def test_load_strategy_with_no_call_temperature(strategy):
     '''Test whether method load call strategy witout temperature from path properly.'''
-    strategy.load('tests/strategys/strategy_no_call_temperature.json')
+    strategy.load('tests/strategys/local/strategy_no_call_temperature.json')
     assert strategy.call.role == {
         'input': "<|User|>",
         'output': "<|Assistant|>"
@@ -148,7 +148,7 @@ def test_load_strategy_with_no_call_temperature(strategy):
 ## ========================== Load Chat Strategy ========================== ##
 def test_load_strategy_with_no_chat_prompt(strategy):
     '''Test whether method load chat strategy without prompt from path properly.'''
-    strategy.load('tests/strategys/strategy_no_chat_prompt.json')
+    strategy.load('tests/strategys/local/strategy_no_chat_prompt.json')
     assert strategy.chat.prompt == None
     assert strategy.chat.role == {
         'prompt': None,
@@ -163,25 +163,25 @@ def test_load_strategy_with_error_chat_prompt(strategy):
     '''Test whether method raise exception when prompt path error.'''
     error = 'Error: Prompt file not found in provided path.'
     with pytest.raises(FileNotFoundError,match=error):
-        strategy.load('tests/strategys/strategy_error_chat_prompt.json')
+        strategy.load('tests/strategys/local/strategy_error_chat_prompt.json')
     
 def test_load_strategy_with_no_chat_prompt_role(strategy):
     '''Test whether method raise exception with no prompt role for chat.'''
     error = 'Error: Missing prompt role parameter for chat inference.'
     with pytest.raises(ValueError,match=error):
-        strategy.load('tests/strategys/strategy_no_chat_prompt_role.json')
+        strategy.load('tests/strategys/local/strategy_no_chat_prompt_role.json')
 
 def test_load_strategy_with_no_chat_input_role(strategy):
     '''Test whether method raise exception with no input role for chat.'''
     error = 'Error: Missing input role parameter for chat inference.'
     with pytest.raises(ValueError,match=error):
-        strategy.load('tests/strategys/strategy_no_chat_input_role.json')
+        strategy.load('tests/strategys/local/strategy_no_chat_input_role.json')
 
 def test_load_strategy_with_no_chat_output_role(strategy):
     '''Test whether method raise exception with no output role for chat.'''
     error = 'Error: Missing output role parameter for chat inference.'
     with pytest.raises(ValueError,match=error):
-        strategy.load('tests/strategys/strategy_no_chat_output_role.json')
+        strategy.load('tests/strategys/local/strategy_no_chat_output_role.json')
 
 def test_load_strategy_with_no_chat_max_token(strategy):
     '''
@@ -192,7 +192,7 @@ def test_load_strategy_with_no_chat_max_token(strategy):
     warning += 'the max generation token number will be set '
     warning += 'refer to the loaded model.'
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_chat_max_token.json')
+        strategy.load('tests/strategys/local/strategy_no_chat_max_token.json')
         assert strategy.chat.prompt == 'This is used for test.'
         assert strategy.chat.role == {
             'prompt': 'system',
@@ -212,7 +212,7 @@ def test_load_strategy_with_chat_no_stop(strategy):
     warning += "inference won't stop "
     warning += "until max generation token number reached."
     with pytest.warns(UserWarning,match=warning):
-        strategy.load('tests/strategys/strategy_no_chat_stop.json')
+        strategy.load('tests/strategys/local/strategy_no_chat_stop.json')
         assert strategy.chat.prompt == 'This is used for test.'
         assert strategy.chat.role == {
             'prompt': 'system',
@@ -225,7 +225,7 @@ def test_load_strategy_with_chat_no_stop(strategy):
 
 def test_load_strategy_with_no_chat_temperature(strategy):
     '''Test whether method load call strategy witout temperature from path properly.'''
-    strategy.load('tests/strategys/strategy_no_chat_temperature.json')
+    strategy.load('tests/strategys/local/strategy_no_chat_temperature.json')
     assert strategy.chat.prompt == 'This is used for test.'
     assert strategy.chat.role == {
         'prompt': 'system',
