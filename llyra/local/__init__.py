@@ -1,4 +1,4 @@
-from .configs import Config
+from .configs import ConfigLocal
 from .strategys import Strategy
 from .prompts import Prompt
 from .logs import Log
@@ -32,7 +32,7 @@ class Model:
             A target LLM loaded Model object.
         '''
         # Initialize necessary object attributes
-        self.config = Config()
+        self.config = ConfigLocal()
         self.strategy = Strategy()
         self.prompt = Prompt()
         self.log = Log()
