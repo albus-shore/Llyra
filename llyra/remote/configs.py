@@ -3,7 +3,7 @@ from ..configs import Config
 
 ### ============================= Inside Functions ============================= ###
 ## =============== Necessary Parameters Check Function =============== ##
-def necessary(model:str,strategy:str) -> None:
+def check_necessary(model:str,strategy:str) -> None:
     '''The function is defined for check necessary config parameters.
     Args:
         model: A string indicate the model for inference.
@@ -40,13 +40,13 @@ class ConfigRemote(Config):
             path: A string indicate the path to the config file.
         '''
         # Load config file
-        config = super()._load(path=path)
+        super()._load(path=path)
         # Read config parameter
-        self.url = config.get('url',None)
-        self.endpoint = config.get('endpoint',None)
-        self.model = config.get('model',None)
-        self.strategy = config.get('strategy',None)
-        self.stream = config.get('stream',False)
+        self.url = self._config.get('url',None)
+        self.endpoint = self._config.get('endpoint',None)
+        self.model = self._config.get('model',None)
+        self.strategy = self._config.get('strategy',None)
+        self.stream = self._config.get('stream',False)
         # Critical parameters check
         if not self.url:
             error = 'Error: Missing base URL parameter.'
@@ -55,10 +55,10 @@ class ConfigRemote(Config):
             error = 'Error: Missing service endpoint parameter.'
             raise IndexError(error)
         # Necessary parameters check
-        necessary(self.model,self.strategy)
+        check_necessary(self.model,self.strategy)
         # Fix possible invalid attribute
-        self.url = super()._path(self.url)
-        self.endpoint = super()._path(self.endpoint)
+        self.url = super().path(self.url)
+        self.endpoint = super().path(self.endpoint)
 
     ## ============================ Update Method ============================ ##
     def update(self,
@@ -78,9 +78,9 @@ class ConfigRemote(Config):
         # Update parameter according to the input
         ## Update key parameters
         if url:
-            self.url = super()._path(url)
+            self.url = super().path(url)
         if endpoint:
-            self.endpoint = super()._path(endpoint)
+            self.endpoint = super().path(endpoint)
         ## Update normal parameter
         if model != None:
             self.model = model
@@ -89,7 +89,7 @@ class ConfigRemote(Config):
         if stream != None:
             self.stream = stream
         # Necessary parameters check 
-        necessary(self.model,self.strategy)
+        check_necessary(self.model,self.strategy)
 
     ## ============================ Write Method ============================ ##
     def write(self) -> None:

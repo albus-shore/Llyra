@@ -1,23 +1,23 @@
 from pathlib import Path
 import json
 
-### =============================== Expose Class =============================== ###
 class Config:
     '''The class is defined to define basic attributes and internal methods, 
         for working with configurations.'''
+    ### ============================ Dynamic Methods ============================ ###
     ## ========================== Initialize Method ========================== ##
     def __init__(self) -> None:
         '''The method is defined for initializing Config class object.'''
         # Define default path to config file
         self.config = 'config/config.json'
+        # Define assistant internal attribute
+        self._config: dict = None
 
     ## ======================== Internal Load Method ======================== ##
     def _load(self,path:str) -> dict:
         '''The method is defined for load config from default or custom path.
         Args:
             path: A string indicate the custom path to the config file.
-        Returns:
-            config: A dictionary indicate the configrations in config file.
         '''
         # Discriminate whether loading from custom path or default path
         if path:
@@ -34,27 +34,7 @@ class Config:
                 error = 'Error: Missing config file.'
             raise FileNotFoundError(error)
         else:
-            config:dict = json.loads(config_json)
-        # Return config
-        return config
-    
-    ## ======================== Internal Path Method ======================== ##
-    def _path(self,path:str) -> str:
-        '''The method is defined for struct of multi-kind path.
-        Args:
-            path: A string indicate the local path to a directory, 
-                or base URL and endpoint path to a service.
-        Returns:
-            struct_path: A string indicate the valid path string 
-                which ends with '/'.
-        '''
-        # Discriminate whether path end with '/'
-        if path.endswith('/'):
-            struct_path = path
-        else:
-            struct_path = path + '/'
-        # Return struct path
-        return struct_path
+            self._config:dict = json.loads(config_json)
     
     ## ======================== Internal Write Method ======================== ##
     def _write(self,content:dict) -> None:
@@ -84,3 +64,23 @@ class Config:
         path.write_text(content,encoding='utf-8')
         # Terminal Information
         print("Current config has been write into '.config/config.json'.")
+
+    ### ============================ Statics Methods ============================ ###
+    ## ======================== Internal Path Method ======================== ##
+    @staticmethod
+    def path(path:str) -> str:
+        '''The method is defined for struct of multi-kind path.
+        Args:
+            path: A string indicate the local path to a directory, 
+                or base URL and endpoint path to a service.
+        Returns:
+            struct_path: A string indicate the valid path string 
+                which ends with '/'.
+        '''
+        # Discriminate whether path end with '/'
+        if path.endswith('/'):
+            struct_path = path
+        else:
+            struct_path = path + '/'
+        # Return struct path
+        return struct_path
