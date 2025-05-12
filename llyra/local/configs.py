@@ -1,5 +1,5 @@
 from warnings import warn
-from ..configs import Config
+from ..base import Config
 
 ### ============================= Inside Functions ============================= ###
 ## ========================== Name Function ========================== ##

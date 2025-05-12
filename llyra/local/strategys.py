@@ -1,5 +1,5 @@
 from warnings import warn
-from ..strategys import Strategy
+from ..base import Strategy
 
 ### ============================= Inside Functions ============================= ###
 ## ====================== Role Parameter Check Function ====================== ##
