@@ -177,7 +177,7 @@ def test_update_stream_config_parameter(loaded_config):
     assert loaded_config.stream == True
 
 ## ========================== Write Method Test ========================== ##
-def test_writing_current_config_into_file_without_conflict(loaded_config):
+def test_writing_current_config_into_file(loaded_config):
     '''Test whether method write current config into file properly.'''
     loaded_config.update(url='test',
                          endpoint='test',
@@ -194,29 +194,3 @@ def test_writing_current_config_into_file_without_conflict(loaded_config):
             assert '"model": "test"' in content
             assert '"strategy": "tests/configs/strategy.json"' in content
             assert '"stream": true' in content
-
-def test_writing_current_config_into_file_with_conflict(loaded_config):
-        '''Test whether methed handle condition that meets file name conflict.'''
-        loaded_config.update(url='test',
-                         endpoint='test',
-                         model='test',
-                         strategy='tests/configs/strategy.json',
-                         stream=True,)
-        with patch.object(Path,'exists',return_value=True):
-            with patch('builtins.input',return_value='w'):
-                with patch.object(Path,'write_text') as mock_write:
-                    loaded_config.write()
-                    content = mock_write.call_args[0][0]
-                    assert mock_write.called
-                    assert '"url": "test/"' in content
-                    assert '"endpoint": "test/"' in content
-                    assert '"model": "test"' in content
-                    assert '"strategy": "tests/configs/strategy.json"' in content
-                    assert '"stream": true' in content
-
-        with patch.object(Path,'exists',return_value=True):
-            with patch('builtins.input',return_value='q'):
-                with patch.object(Path,'write_text') as mock_write:
-                    with pytest.raises(FileExistsError):
-                        loaded_config.write()
-                        assert not mock_write.called

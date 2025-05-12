@@ -6,7 +6,7 @@
         "input": "user",
         "output": "assistant"
         },
-    "prompt": "tests/strategys/local/prompt.txt",
-    "stop": "<|User|>",
-    "max_token": 128e3
+    "prompt": "tests/strategys/prompt.txt",
+    "max_token": 128e3,
+    "temperature": 0.6
 }]

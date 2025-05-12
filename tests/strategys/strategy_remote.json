@@ -1,0 +1,16 @@
+[{
+    "type": "call",
+    "stop": "<EOF>",
+    "temperature": 0.6
+},
+{
+    "type": "chat",
+    "role": {
+        "prompt": "system",
+        "input": "user",
+        "output": "assistant"
+        },
+    "prompt": "tests/strategys/prompt.txt",
+    "stop": "<EOF>",
+    "temperature": 0.6
+}]
