@@ -8,6 +8,32 @@ class Prompt():
         # Initialize chat iteration attribute
         self._iteration:list = []
 
+    ## =========================== Generate Method =========================== ##
+    def chat(self,role:dict,content:str,addition:str) -> list:
+        '''The method is defined for generate prompt of iterative chat inference.
+        Args:
+            role: A dictionary indicate input and prompt role of
+                iterative chat inference.
+            content: A string indicate the input content for model inference.
+            addition: A string indicate additional prompt for model inference.
+        Returns:
+            prompt: A list indicate proper structed content for chat inference.
+        '''
+        # Get iterative chat role prompt parameters
+        prompt = role['prompt']
+        input = role['input']
+        # Get iteration record
+        iteration_prompt = self._iteration[:]
+        # Discrinimate whether and how to add additional prompt
+        if addition:
+            additional_prompt = self.make(prompt,addition)
+            iteration_prompt.insert(0,additional_prompt)
+        # Make structed prompt
+        user_prompt = self.make(input,content)
+        iteration_prompt.append(user_prompt)
+        # Return prompt for inference
+        return iteration_prompt
+    
     ## ===================== Additional Method for Chat ===================== ##
     def iterate(self,role:str,content:str,keep:bool) -> None:
         '''The method is defined for update chat iteration history record.
