@@ -209,3 +209,8 @@ def test_chat_method(log):
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
         }
+    
+def test_get_method_with_invalid_id(log):
+    '''Test wether the method raise exception properly when meeting invalid id.'''
+    with pytest.raises(IndexError,match='Error: Record not created.'):
+        log.get(1)
