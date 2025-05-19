@@ -24,12 +24,10 @@ class Local:
     '''The class is defined for fulfill local LLM call.'''
 
     ## ========================= Class Initialize Method ========================== ##
-    def __init__(self,path:str=None) -> object:
-        '''The method is defined for initialize model object.
+    def __init__(self,path:str=None) -> None:
+        '''The method is defined for initialize Local class object.
         Args:
             path: A string indicate the path to config file.
-        Returns:
-            A target LLM loaded Model object.
         '''
         # Initialize necessary object attributes
         self.config = ConfigLocal()
