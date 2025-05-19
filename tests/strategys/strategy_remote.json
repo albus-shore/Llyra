@@ -1,6 +1,7 @@
 [{
     "type": "call",
     "stop": "<EOF>",
+    "system": "This is for test.",
     "temperature": 0.6
 },
 {

@@ -10,6 +10,7 @@ class StrategyRemote(Strategy):
         # Initialize parent class
         super().__init__()
         # Define single call strategy
+        self.call.system = None
         self.call.stop = None
         self.call.temperature = None
         # Define iterative chat strategy
@@ -24,6 +25,7 @@ class StrategyRemote(Strategy):
         '''
         # Define strategy loading method
         def call(strategy:dict):
+            self.call.system = strategy.get('system',None)
             self.call.stop = strategy.get('stop',None)
             self.call.temperature = strategy.get('temperature',0)
         def chat(strategy:dict):
@@ -33,13 +35,16 @@ class StrategyRemote(Strategy):
         super()._load(path,call,chat)    
 
     ## =========================== Update Methods =========================== ##
-    def update_call(self,stop:str,temperature:float) -> None:
+    def update_call(self,system:str,stop:str,temperature:float) -> None:
         '''The method is defined for update inference strategy for call.
         Args:
+            system: A string indicate system prompt for model inference.
             stop: A string indicate where the model should stop generation.
             temperature: A float indicate the model inference temperature.
         '''
         # Update strategy parameters
+        if system != None:
+            self.call.system = system
         if stop != None:
             self.call.stop = stop
         if temperature != None:

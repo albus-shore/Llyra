@@ -9,6 +9,7 @@ def strategy():
 ### ============================== Initialize Test ============================== ###
 def test_class_initialize(strategy):
     '''Test whether the class can be initialized properly.'''
+    assert strategy.call.system == None
     assert strategy.call.stop == None
     assert strategy.call.temperature == None
     assert strategy.chat.prompt == None
@@ -24,6 +25,7 @@ def test_class_initialize(strategy):
 def test_load_strategy_file(strategy):
     '''Test whether method load strategy file form path properly.'''
     strategy.load('tests/strategys/strategy_remote.json')
+    assert strategy.call.system == 'This is for test.'
     assert strategy.call.stop == '<EOF>'
     assert strategy.call.temperature == 0.6
     assert strategy.chat.prompt == 'This is used for test.'
@@ -39,7 +41,9 @@ def test_load_strategy_file(strategy):
 ## ========================== Update Call Strategy ========================== ##
 def test_update_call_strategy(strategy):
     '''Test whether method update call strategy properly.'''
-    strategy.update_call(stop='user',temperature=1)
+    system = 'This is for test.'
+    strategy.update_call(system,stop='user',temperature=1)
+    assert strategy.call.system == 'This is for test.'
     assert strategy.call.stop == 'user'
     assert strategy.call.temperature == 1
 
