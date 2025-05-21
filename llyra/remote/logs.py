@@ -1,4 +1,4 @@
-from ..base.logs import Log
+from ..base import Log
 
 ### =============================== Expose Class =============================== ###
 class LogRemote(Log):

@@ -1,4 +1,4 @@
-from ..base.prompts import Prompt
+from ..base import Prompt
 
 class PromptLocal(Prompt):
     '''The class is defind for generate prompt for local model inference.'''
