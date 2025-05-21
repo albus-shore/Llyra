@@ -1,6 +1,6 @@
-from llyra import Model
+from llyra.local import Local
 
-model = Model()
+model = Local()
 
 response_1 = model.chat('Evening!',keep=True)
 
@@ -14,12 +14,13 @@ response_3 = model.chat('What I said at the beginning?',True)
 
 print(response_3)
 
-print(model.prompt.iteration)
-print(model.log.history)
+print(model.prompt._iteration)
+
+print(model.log.get(-1))
 
 response_4 = model.chat('Evening!',keep=False)
 
 print(response_4)
 
-print(model.prompt.iteration)
-print(model.log.history)
+print(model.prompt._iteration)
+print(model.log.get(-1))

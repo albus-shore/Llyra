@@ -1,7 +1,7 @@
-from .configs import Config
-from .strategys import Strategy
-from .prompts import Prompt
-from .logs import Log
+from .configs import ConfigLocal
+from .strategys import StrategyLocal
+from .prompts import PromptLocal
+from .logs import LogLocal
 from llama_cpp import Llama
 
 ### =============================== Inside Functions =============================== ###
@@ -20,22 +20,20 @@ def gpu(gpu:bool) -> int:
     return layer
 
 ### ================================= Expose Class ================================= ###
-class Model:
+class Local:
     '''The class is defined for fulfill local LLM call.'''
 
     ## ========================= Class Initialize Method ========================== ##
-    def __init__(self,path:str=None) -> object:
-        '''The method is defined for initialize model object.
+    def __init__(self,path:str=None) -> None:
+        '''The method is defined for initialize Local class object.
         Args:
             path: A string indicate the path to config file.
-        Returns:
-            A target LLM loaded Model object.
         '''
         # Initialize necessary object attributes
-        self.config = Config()
-        self.strategy = Strategy()
-        self.prompt = Prompt()
-        self.log = Log()
+        self.config = ConfigLocal()
+        self.strategy = StrategyLocal()
+        self.prompt = PromptLocal()
+        self.log = LogLocal()
         # Import toolkit config
         self.config.load(path)
         # Import inference config
@@ -68,24 +66,23 @@ class Model:
             A string indicate the model reponse content.
         '''
         # Update inference strategy if necessary
-        self.strategy.call(input_role=input_role,output_role=output_role,
+        self.strategy.update_call(input_role=input_role,output_role=output_role,
                            stop=stop,max_token=max_token,
                            temperature=temperature)
         # Get input content
         self.query = message
         # Make prompt
-        prompt = self.prompt.call(self.strategy.call_role,self.query)
+        prompt = self.prompt.call(self.strategy.call.role,self.query)
         # Fulfill model inference
         self.response = self.model.create_completion(prompt=prompt,
-            stop=self.strategy.call_stop,
-            max_tokens=self.strategy.call_tokens,
-            temperature=self.strategy.call_temperature)['choices'][0]['text']
+            stop=self.strategy.call.stop,
+            max_tokens=self.strategy.call.tokens,
+            temperature=self.strategy.call.temperature)['choices'][0]['text']
         # Update log
         self.log.call(model=self.config.model,
-                      role=self.strategy.call_role,
+                      role=self.strategy.call.role,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.call_temperature,
-                      strategy=self.config.strategy)
+                      temperature=self.strategy.call.temperature)
         # Return model inference response
         return self.response
 
@@ -113,7 +110,7 @@ class Model:
             A string indicate the model response content of the chat inference.
         '''
         # Update inference strategy if necessary
-        self.strategy.chat(addition,
+        self.strategy.update_chat(addition,
                            prompt_role,input_role,output_role,
                            stop,max_token,
                            temperature)
@@ -121,29 +118,28 @@ class Model:
         self.prompt.iterate(None,None,keep)
         # Add additional prompt iteration record if necessary
         if iteration:
-            self.prompt.iteration.extend(iteration)
+            self.prompt._iteration.extend(iteration)
         # Get input content
         self.query = message
         # Make prompt
-        prompt = self.prompt.chat(self.strategy.chat_role,
+        prompt = self.prompt.chat(self.strategy.chat.role,
                                   self.query,
-                                  self.strategy.chat_prompt)
+                                  self.strategy.chat.prompt)
         # Fulfill model inference
         self.response = self.model.create_chat_completion(messages=prompt,
-            stop=self.strategy.chat_stop,
-            max_tokens=self.strategy.chat_tokens,
-            temperature=self.strategy.chat_temperature
+            stop=self.strategy.chat.stop,
+            max_tokens=self.strategy.chat.tokens,
+            temperature=self.strategy.chat.temperature
             )['choices'][0]['message']['content']
         # Update prompt iteration record
-        self.prompt.iterate(self.strategy.chat_role['input'],self.query,True)
-        self.prompt.iterate(self.strategy.chat_role['output'],self.response,True)
+        self.prompt.iterate(self.strategy.chat.role['input'],self.query,True)
+        self.prompt.iterate(self.strategy.chat.role['output'],self.response,True)
         # Update log
         self.log.chat(model=self.config.model,
-                      prompt=self.strategy.chat_prompt,
-                      role=self.strategy.chat_role,
+                      prompt=self.strategy.chat.prompt,
+                      role=self.strategy.chat.role,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.chat_temperature,
-                      strategy=self.config.strategy,
+                      temperature=self.strategy.chat.temperature,
                       keep=keep)
         # Return model inference response
         return self.response

@@ -1,12 +1,17 @@
-[
+[{
+    "type": "call",
+    "stop": "<EOF>",
+    "system": "This is for test.",
+    "temperature": 0.6
+},
 {
     "type": "chat",
     "role": {
         "prompt": "system",
+        "input": "user",
         "output": "assistant"
         },
     "prompt": "tests/strategys/prompt.txt",
-    "stop": "<|User|>",
-    "max_token": 128e3,
+    "stop": "<EOF>",
     "temperature": 0.6
 }]

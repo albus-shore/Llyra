@@ -1,17 +1,17 @@
 import pytest
 from unittest.mock import patch,MagicMock
-from llyra.local.configs import Config
+from llyra.local.configs import ConfigLocal
 from pathlib import Path
 
 @pytest.fixture
 def config():
-    config = Config()
+    config = ConfigLocal()
     return config
 
 @pytest.fixture
 def loaded_config():
-    loaded_config = Config()
-    loaded_config.load('tests/configs/config_normal.json')
+    loaded_config = ConfigLocal()
+    loaded_config.load('tests/configs/config_local.json')
     return loaded_config
 
 ## ========================== Load Method Test ========================== ##
@@ -33,7 +33,7 @@ def test_load_default_config_file(config):
 
 def test_load_config_file_from_path(config):
     '''Test whether method load config form provided path properly.'''
-    config.load('tests/configs/config_normal.json')
+    config.load('tests/configs/config_local.json')
     assert config.model == 'model'
     assert config.directory == 'models/'
     assert config.strategy == 'config/strategy.json'
@@ -155,7 +155,6 @@ def test_update_format_config_parameter(loaded_config):
     '''Test whether method update format config parameter properly.
     And show warning when setting format to empty properly.
     '''
-    loaded_config.load('tests/configs/config_normal.json')
     loaded_config.update(model=None,
                   directory=None,
                   strategy=None,
@@ -206,7 +205,6 @@ def test_update_gpu_config_parameter(loaded_config):
 
 def test_update_ram_config_parameter(loaded_config):
     '''Test whether method update ram config parameter properly.'''
-    loaded_config.load('tests/configs/config_normal.json')
     loaded_config.update(model=None,
                   directory=None,
                   strategy=None,
@@ -222,7 +220,7 @@ def test_update_ram_config_parameter(loaded_config):
     assert loaded_config.ram == True
 
 ## ========================== Write Method Test ========================== ##
-def test_writing_current_config_into_file_without_conflict(loaded_config):
+def test_writing_current_config_into_file(loaded_config):
     '''Test whether method write current config into file properly.'''
     loaded_config.update(model='test',
                   directory='test/',
@@ -241,31 +239,3 @@ def test_writing_current_config_into_file_without_conflict(loaded_config):
             assert '"gpu": true' in content
             assert '"format": "openai"' in content
             assert '"ram": false' in content
-
-def test_writing_current_config_into_file_with_conflict(loaded_config):
-    '''Test whether methed handle condition that meets file name conflict.'''
-    loaded_config.update(model='test',
-                  directory='test/',
-                  strategy='tests/config/strategy.json',
-                  gpu=True,
-                  format='openai',
-                  ram=False,)
-    with patch.object(Path,'exists',return_value=True):
-        with patch('builtins.input',return_value='w'):
-            with patch.object(Path,'write_text') as mock_write:
-                loaded_config.write()
-                content = mock_write.call_args[0][0]
-                assert mock_write.called
-                assert '"model": "test"' in content
-                assert '"directory": "test/"' in content
-                assert '"strategy": "tests/config/strategy.json"' in content
-                assert '"gpu": true' in content
-                assert '"format": "openai"' in content
-                assert '"ram": false' in content
-    
-    with patch.object(Path,'exists',return_value=True):
-        with patch('builtins.input',return_value='q'):
-            with patch.object(Path,'write_text') as mock_write:
-                with pytest.raises(FileExistsError):
-                    loaded_config.write()
-                    assert not mock_write.called

@@ -1,6 +1,5 @@
 import pytest
-from llyra.local.logs import Log
-
+from llyra.base.logs import Log
 @pytest.fixture
 def log():
     log = Log()
@@ -10,32 +9,30 @@ def log():
 def test_initialize_method(log):
     '''Test whether the class can be initialized properly.'''
     assert log.id == 0
-    assert log.history == []
+    assert log._history == []
 
 ## ========================== Record Methods Test ========================== ##
 def test_call_method(log):
     '''Test whether the method can record inference history properly.'''
-    log.call(model='model',
+    log._call(model='model',
              role={'input':'user','output':'assistant'},
              input='hello, there!',
-             output='hello, how can I assist you today?',
-             temperature=0.6,
-             strategy=None)
+             output='hello, how can I assist you today?')
+    record = log.get(0)
     assert log.id == 1
-    assert log.history[0] == {
-        'id': 1,
+    assert record == {
+        'id': 0,
         'type': 'call',
-        'create_at': log.history[0]['create_at'],
         'model': 'model',
+        'prompt': None,
         'role': {'input':'user','output':'assistant'},
         'iteration': [{
             'query': 'hello, there!',
             'response': 'hello, how can I assist you today?'
             }],
-        'temperature': 0.6,
-        'strategy': None
-        }
-
+        'create_at': log._history[0].create_at,
+        }    
+    
 def test_chat_method(log):
     '''Test whether the method can record inference history properly.'''
     prompt = 'This is for test.'
@@ -44,39 +41,35 @@ def test_chat_method(log):
         'input': 'user',
         'output': 'assistant',
         }
-    log.chat(model='model',
+    log._chat(model='model',
              prompt=prompt,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
-             temperature=0.6,
-             strategy='strategy.json',
              keep=True)
+    record = log.get(-1)
     assert log.id == 1
-    assert log.history == [{
-        'id': 1,
+    assert record == [{
+        'id': 0,
         'type': 'chat',
-        'create_at': log.history[0]['create_at'],
+        'create_at': log._history[0].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
         'iteration': [
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         }]
-    log.chat(model='model',
+    log._chat(model='model',
              prompt=prompt,
              role=role,
              input='Good day!',output='Greeting, how can I assist you today?',
-             temperature=0.6,
-             strategy='strategy.json',
              keep=True)
+    record = log.get(-1)
     assert log.id == 1
-    assert log.history == [{
-        'id': 1,
+    assert record == [{
+        'id': 0,
         'type': 'chat',
-        'create_at': log.history[0]['create_at'],
+        'create_at': log._history[0].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
@@ -84,21 +77,18 @@ def test_chat_method(log):
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'},
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         }]
-    log.chat(model='model',
+    log._chat(model='model',
              prompt=prompt,
              role=role,
              input='Good day!',output='Greeting, how can I assist you today?',
-             temperature=0.6,
-             strategy='strategy.json',
              keep=False)
+    record = log.get(-1)
     assert log.id == 2
-    assert log.history == [{
-        'id': 1,
+    assert record == [{
+        'id': 0,
         'type': 'chat',
-        'create_at': log.history[0]['create_at'],
+        'create_at': log._history[0].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
@@ -106,32 +96,27 @@ def test_chat_method(log):
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'},
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         },{
-        'id': 2,
+        'id': 1,
         'type': 'chat',
-        'create_at': log.history[1]['create_at'],
+        'create_at': log._history[1].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
         'iteration': [
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         }]
-    log.call(model='model',
+    log._call(model='model',
              role={'input':'user','output':'assistant'},
              input='hello, there!',
-             output='hello, how can I assist you today?',
-             temperature=0.6,
-             strategy=None)
+             output='hello, how can I assist you today?',)
+    record = log.get(-1)
     assert log.id == 3
-    assert log.history == [{
-        'id': 1,
+    assert record == [{
+        'id': 0,
         'type': 'chat',
-        'create_at': log.history[0]['create_at'],
+        'create_at': log._history[0].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
@@ -139,45 +124,39 @@ def test_chat_method(log):
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'},
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         },{
-        'id': 2,
+        'id': 1,
         'type': 'chat',
-        'create_at': log.history[1]['create_at'],
+        'create_at': log._history[1].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
         'iteration': [
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         },{
-        'id': 3,
+        'id': 2,
         'type': 'call',
-        'create_at': log.history[2]['create_at'],
+        'create_at': log._history[2].create_at,
         'model': 'model',
+        'prompt': None,
         'role': {'input':'user','output':'assistant'},
         'iteration': [{
             'query': 'hello, there!',
             'response': 'hello, how can I assist you today?'
             }],
-        'temperature': 0.6,
-        'strategy': None
         }]
-    log.chat(model='model',
+    log._chat(model='model',
              prompt=prompt,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
-             temperature=0.6,
-             strategy='strategy.json',
              keep=True)
+    record = log.get(-1)
     assert log.id == 4
-    assert log.history == [{
-        'id': 1,
+    assert record == [{
+        'id': 0,
         'type': 'chat',
-        'create_at': log.history[0]['create_at'],
+        'create_at': log._history[0].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
@@ -185,42 +164,53 @@ def test_chat_method(log):
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'},
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         },{
-        'id': 2,
+        'id': 1,
         'type': 'chat',
-        'create_at': log.history[1]['create_at'],
+        'create_at': log._history[1].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
         'iteration': [
             {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         },{
-        'id': 3,
+        'id': 2,
         'type': 'call',
-        'create_at': log.history[2]['create_at'],
+        'create_at': log._history[2].create_at,
         'model': 'model',
+        'prompt': None,
         'role': {'input':'user','output':'assistant'},
         'iteration': [{
             'query': 'hello, there!',
             'response': 'hello, how can I assist you today?'
             }],
-        'temperature': 0.6,
-        'strategy': None
         },{
-        'id': 4,
+        'id': 3,
         'type': 'chat',
-        'create_at': log.history[3]['create_at'],
+        'create_at': log._history[3].create_at,
         'model': 'model',
         'prompt': prompt,
         'role': role,
         'iteration': [
             {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'}
             ],
-        'temperature': 0.6,
-        'strategy': 'strategy.json'
         }]
+    record = log.get(0)
+    assert record == {
+        'id': 0,
+        'type': 'chat',
+        'create_at': log._history[0].create_at,
+        'model': 'model',
+        'prompt': prompt,
+        'role': role,
+        'iteration': [
+            {'query': 'Hello, there!', 'response': 'Greeting, how can I assist you today?'},
+            {'query': 'Good day!', 'response': 'Greeting, how can I assist you today?'}
+            ],
+        }
+    
+def test_get_method_with_invalid_id(log):
+    '''Test wether the method raise exception properly when meeting invalid id.'''
+    with pytest.raises(IndexError,match='Error: Record not created.'):
+        log.get(1)

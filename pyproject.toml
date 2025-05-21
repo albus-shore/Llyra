@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llyra"
-version = "0.1.1"
+version = "0.1.2"
 description = "A lightweight interface for calling LLMs with strategy."
 authors = [
-    { name="Albus Shore", email="albus_shore@outlook.com" }
+    { name="Albus Shore", email="dev@albus-shore.net" }
 ]
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = []
+dependencies = ["requests>=2.32.3"]
 
 [project.urls]
 Homepage = "https://github.com/albus-shore/Llyra"

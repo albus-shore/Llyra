@@ -1,6 +1,6 @@
-from llyra import Model
+from llyra import Local
 
-model = Model()
+model = Local()
 
 response = model.call('Evening!')
 
@@ -8,4 +8,4 @@ print(response)
 
 print(model.query)
 print(model.response)
-print(model.log.history)
+print(model.log.get(0))

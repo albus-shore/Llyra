@@ -1,13 +1,9 @@
-[
-{
+[{
     "type": "chat",
-    "prompt": "prompt.txt",
     "role": {
         "prompt": "system",
         "input": "user",
         "output": "assistant"
         },
-    "stop": "<|User|>",
-    "max_token": 128e3,
-    "temperature": 0.6
+    "prompt": "tests/strategys/prompt.txt"
 }]
