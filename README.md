@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/logo.png" width="300" alt="Llyra Logo"/>
+  <img src="https://raw.githubusercontent.com/albus-shore/Llyra/main/assets/logo.png" width="300" alt="Llyra Logo"/>
 </p>
 
 <h1 align="center">Llyra</h1>
@@ -48,7 +48,7 @@ Llyra does **not** bundle any backend inference engines. You must install them m
 ## 📦 Installation
 
 ```bash
-pip install https://github.com/albus-shore/Llyra/releases/download/v0.1.1/llyra-0.1.1-py3-none-any.whl
+pip install llyra
 ```
 
 ---
@@ -61,9 +61,9 @@ pip install https://github.com/albus-shore/Llyra/releases/download/v0.1.1/llyra-
 4. Rename your **GGUF** file as `model.gguf` and place it under `models/` directory.
 4. Make your first iterative chat inference with follwing example:
   ```python
-  from llyra import Model
+  from llyra import Local
 
-  model = Model()
+  model = Local()
 
   response = model.chat('Evening!',keep=True)
 
@@ -110,9 +110,10 @@ pip install https://github.com/albus-shore/Llyra/releases/download/v0.1.1/llyra-
 |-------|------------------------------------------|-------------|
 | 1     | Minimal `llama-cpp-python` local chat    | ✅ Finished  |
 | 2     | Predefined prompts via `.txt` / `.json`  | ✅ Finished  |
-| 3     | Weaviate RAG support                     | 🔄 Ongoing   |
-| 4     | Ollama remote API support                | ⏳ Planned   |
-| 5     | Tool/function-calling via JSON           | ⏳ Planned   |
+| 3     | Ollama remote API support                | ✅ Finished  |
+| 4     | Section & Branch control                 | 🔄 Ongoing   |
+| 5     | Weaviate RAG support                     | ⏳ Planned   |
+| 6     | Tool/function-calling via JSON           | ⏳ Planned   |
 
 ---
 
