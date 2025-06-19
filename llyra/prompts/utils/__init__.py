@@ -1,0 +1,1 @@
+from .funcs import make_new_inference
