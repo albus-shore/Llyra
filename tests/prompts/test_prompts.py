@@ -1,5 +1,6 @@
 import pytest
 from llyra.components import Prompt
+from llyra.components.utils import Role
 
 @pytest.fixture
 def prompt():
@@ -93,11 +94,7 @@ def test_chat_method_without_iteration_and_addition(prompt):
     Test whether the method can make prompt for iterative chat inference 
     without iteration and addition properly.
     '''
-    role = {
-        "prompt": "system",
-        "input": "user",
-        "output": "assistant"
-        }
+    role = Role('system','user','assistant')
     content = 'hello,there!'
     output = prompt.chat(role=role,content=content,addition=None)
     assert output == [
@@ -110,11 +107,7 @@ def test_chat_method_without_iteration_and_with_addition(prompt):
     Test whether the method can make prompt for iterative chat inference 
     without iteration and with addition properly.
     '''
-    role = {
-        "prompt": "system",
-        "input": "user",
-        "output": "assistant"
-        }
+    role = Role('system','user','assistant')
     content = 'hello,there!'
     addition = 'This is for test.'
     output = prompt.chat(role=role,content=content,addition=addition)
@@ -129,11 +122,7 @@ def test_chat_method_with_iteration_and_without_addition(iterated_prompt):
     Test whether the method can not affect the iteration history.
     And make prompt for iterative chat inference without addition properly.
     '''
-    role = {
-        "prompt": "system",
-        "input": "user",
-        "output": "assistant"
-        }
+    role = Role('system','user','assistant')
     content = 'hello,there!'
     output = iterated_prompt.chat(role=role,content=content,addition=None)
     assert output == [
@@ -152,11 +141,7 @@ def test_chat_method_with_iteration_and_addition(iterated_prompt):
     Test whether the method can not affect the iteration history.
     And make prompt for iterative chat inference with addition properly.
     '''
-    role = {
-        "prompt": "system",
-        "input": "user",
-        "output": "assistant"
-        }
+    role = Role('system','user','assistant')
     content = 'hello,there!'
     addition = 'This is for test.'
     output = iterated_prompt.chat(role=role,content=content,addition=addition)

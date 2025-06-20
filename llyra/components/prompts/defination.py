@@ -1,4 +1,5 @@
 from .utils import make_new_inference
+from ..utils import Role
 
 class Prompt():
     '''The class is defined to define basic attributes and internal methods,
@@ -22,10 +23,10 @@ class Prompt():
         # Return prompte for inference
         return prompt 
 
-    def chat(self,role:dict,content:str,addition:str) -> list:
+    def chat(self,role:Role,content:str,addition:str) -> list:
         '''The method is defined for generate prompt of iterative chat inference.
         Args:
-            role: A dictionary indicate input and prompt role of
+            role: A dataclass indicate input and prompt role of
                 iterative chat inference.
             content: A string indicate the input content for model inference.
             addition: A string indicate additional prompt for model inference.
@@ -33,8 +34,8 @@ class Prompt():
             prompt: A list indicate proper structed content for chat inference.
         '''
         # Get iterative chat role prompt parameters
-        prompt = role['prompt']
-        input = role['input']
+        prompt = role.prompt
+        input = role.input
         # Get iteration record
         iteration_prompt = self.iteration[:]
         # Discrinimate whether and how to add additional prompt

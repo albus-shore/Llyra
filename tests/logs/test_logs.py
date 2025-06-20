@@ -1,6 +1,7 @@
 import pytest
 from llyra.components import Log
-from llyra.components.logs.utils import Section,make_new_iteration
+from llyra.components.logs.utils import Section, make_new_iteration
+from llyra.components.utils import Role
 
 @pytest.fixture
 def log():
@@ -18,11 +19,7 @@ def recorded_log():
     # Set second log record
     ## Set executive value
     prompt = 'This is for test.'
-    role = {
-        'prompt': 'system',
-        'input': 'user',
-        'output': 'assistant',
-        }
+    role = Role('system','user','assistant')
     ## Execute iterative chat log record
     recorded_log.chat(model='model',
              prompt=prompt,
@@ -68,11 +65,7 @@ def test_chat_method(log):
     '''Test whether the method can record inference history properly.'''
     # Set executive value
     prompt = 'This is for test.'
-    role = {
-        'prompt': 'system',
-        'input': 'user',
-        'output': 'assistant',
-        }
+    role = Role('system','user','assistant')
     # Execute iterative chat log record
     log.chat(model='model',
              prompt=prompt,
@@ -94,11 +87,7 @@ def test_chat_method_keeping_recording(log):
     '''Test whether the method can keep recording inference history properly.'''
     # Set executive value
     prompt = 'This is for test.'
-    role = {
-        'prompt': 'system',
-        'input': 'user',
-        'output': 'assistant',
-        }
+    role = Role('system','user','assistant')
     # Set former executive value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
@@ -127,11 +116,7 @@ def test_chat_method_not_keeping_recording_manually(log):
     when `keep` is set to `False`.'''
     # Set executive value
     prompt = 'This is for test.'
-    role = {
-        'prompt': 'system',
-        'input': 'user',
-        'output': 'assistant',
-        }
+    role = Role('system','user','assistant')
     # Set former executive value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
@@ -170,11 +155,7 @@ def test_chat_method_not_keeping_recording_automatically(log):
     log.id += 1
     # Set executive value
     prompt = 'This is for test.'
-    role = {
-        'prompt': 'system',
-        'input': 'user',
-        'output': 'assistant',
-        }
+    role = Role('system','user','assistant')
     # Execute iterative chat log record
     log.chat(model='model',
              prompt=prompt,

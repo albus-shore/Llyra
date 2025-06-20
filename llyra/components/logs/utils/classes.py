@@ -1,6 +1,8 @@
-from dataclasses import dataclass,field
+from dataclasses import dataclass, field
 from typing import Literal
 from time import time
+
+from ...utils import Role
 
 @dataclass
 class Section:
@@ -9,7 +11,7 @@ class Section:
         id: A integrate indicate the identity of current chat log.
         model: A string indicate the name of model file.
         prompt: A string indicate the content of additional prompt.
-        role: A dictionary indicate input and output role of
+        role: A dataclass indicate input and output role of
                 iterative chat inference.
         temperature: A float indicate the model inference temperature.        
     '''
@@ -17,7 +19,7 @@ class Section:
     type: Literal['call','chat']
     model: str
     prompt: str | None
-    role: dict | None
+    role: Role | None
     temperature: float
     iteration: list = field(default_factory=list)
     create_at: float = field(default_factory=time)

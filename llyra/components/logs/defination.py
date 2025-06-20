@@ -1,4 +1,5 @@
-from .utils import make_new_iteration, Section
+from .utils import make_new_iteration, convert2readable_log, Section
+from ..utils import Role
 
 class Log:
     '''The class is defined to define basic attributes and internal methods,
@@ -33,7 +34,7 @@ class Log:
 
     def chat(self,model:str,
               prompt:str,
-              role:dict,
+              role:Role,
               input:str,output:str,
               temperature:float,
               keep:bool) -> None:
@@ -41,7 +42,7 @@ class Log:
         Args:
             model: A string indicate the name of model file.
             prompt: A string indicate the content of additional prompt.
-            role: A dictionary indicate input and output role of
+            role: A dataclass indicate input and output role of
                 iterative chat inference.
             input: A string indicate input content for model inference.
             output: A string indicate response of model inference.
@@ -85,11 +86,11 @@ class Log:
             except IndexError:
                 raise IndexError('Error: Record not created.')
             else:
-                output = vars(section)
+                output = convert2readable_log(section)
         else:
             # Transform all log records
             output = []
             for section in self.history:
-                output.append(vars(section))
+                output.append(convert2readable_log(section))
         # Return reasonable log record
         return output
