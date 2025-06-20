@@ -1,0 +1,13 @@
+[call]
+stop = "<EOF>"
+temperature = 0.6
+
+[chat]
+prompt = "prompts/prompt.txt"
+stop = "<EOF>"
+temperature = 0.6
+
+[chat.role]
+prompt = "system"
+input = "user"
+output = "assistant"

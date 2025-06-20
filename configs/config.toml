@@ -1,0 +1,22 @@
+[global]
+strategy = "configs/strategy.toml"
+
+[local]
+format = "llama-2"
+gpu = true
+ram = false
+stream = false
+
+[local.model]
+name = "Distill-Llama-8B"
+directory = "models/"
+suffix = ".gguf"
+
+
+[remote]
+model = "llama-2"
+stream = false
+
+[remote.server]
+url = "http://localhost:11434/"
+endpoint = "api/"
