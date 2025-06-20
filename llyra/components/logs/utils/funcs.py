@@ -1,6 +1,6 @@
 from .classes import Section
 
-## ========================== Function `make_new_iteration()` ========================== ##
+## ======================== Function `make_new_iteration()` ======================== ##
 def make_new_iteration(input:str,output:str) -> dict:
     '''The function is defined for make valid record of each iteration.
     Agrs:
@@ -11,7 +11,7 @@ def make_new_iteration(input:str,output:str) -> dict:
     '''
     return {'query': input, 'response': output}
 
-## ======================== Function `convert2readable_log()` ======================== ##
+## ======================= Function `convert2readable_log()` ======================= ##
 def convert2readable_log(section:Section) -> dict:
     '''The function is defined for covert internal log format to readable format.
     Args:

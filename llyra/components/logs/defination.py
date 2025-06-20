@@ -4,14 +4,14 @@ from ..utils import Role
 class Log:
     '''The class is defined to define basic attributes and internal methods,
     for working with logs.'''
-    ## ========================== Initialize Method ========================== ##
+    ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
         '''The method is defined to initialize Log class object.'''
         # Initialize inference history attributes
         self.id = 0
         self.history = []
 
-    ## =========================== Record Methods =========================== ##
+    ## ============================== Record Methods ============================== ##
     def call(self,model:str,
               input:str,output:str,
               temperature:float
@@ -68,6 +68,7 @@ class Log:
         # Append history attribute
         self.history.append(section)
 
+## ============================== Record Read Method ============================== ##
     def get(self,id:int) -> dict | list:
         '''The method is defined to read log records in reasonable way.
         Args:

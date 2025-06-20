@@ -1,3 +1,4 @@
+## ======================== Function `make_new_inference()` ======================== ##
 def make_new_inference(role:str,content:str) -> dict:
     '''The function is defined for make single prompt record in chat iteration.
     Args:

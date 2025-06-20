@@ -4,13 +4,13 @@ from ..utils import Role
 class Prompt():
     '''The class is defined to define basic attributes and internal methods,
     for generating prompts for model inference..'''
-    ## ========================== Initialize Method ========================== ##
+    ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
         '''The method is defined for initialize Prompt class object.'''
         # Initialize chat iteration attribute
         self.iteration:list = []
 
-    ## ========================== Generate Methods ========================== ##
+    ## ============================= Generate Methods ============================= ##
     def call(self,content:str) -> str:
         '''The method is defined for generate prompt of single call inference.
         Args: 
@@ -49,7 +49,7 @@ class Prompt():
         # Return prompt for inference
         return iteration_prompt
     
-    ## ===================== Additional Method for Chat ===================== ##
+    ## ======================== Additional Method for Chat ======================== ##
     def iterate(self,role:str,content:str,keep:bool) -> None:
         '''The method is defined for update chat iteration history record.
         Args:

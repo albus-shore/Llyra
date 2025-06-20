@@ -4,6 +4,7 @@ from time import time
 
 from ...utils import Role
 
+## ============================= Dataclass `Section()` ============================= ##
 @dataclass
 class Section:
     '''The class is defined for making chat history record.
