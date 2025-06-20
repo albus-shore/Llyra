@@ -1,5 +1,5 @@
 import pytest
-from llyra.prompts import Prompt
+from llyra.components import Prompt
 
 @pytest.fixture
 def prompt():

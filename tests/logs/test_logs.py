@@ -1,6 +1,6 @@
 import pytest
-from llyra.logs import Log
-from llyra.logs.utils import Section,make_new_iteration
+from llyra.components import Log
+from llyra.components.logs.utils import Section,make_new_iteration
 
 @pytest.fixture
 def log():
