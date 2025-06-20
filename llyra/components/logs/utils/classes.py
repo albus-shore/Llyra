@@ -4,7 +4,7 @@ from time import time
 
 @dataclass
 class Section:
-    '''The class is defined for making new chat history record.
+    '''The class is defined for making chat history record.
     Args:
         id: A integrate indicate the identity of current chat log.
         model: A string indicate the name of model file.
