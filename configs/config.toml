@@ -18,5 +18,6 @@ model = "llama-2"
 stream = false
 
 [remote.server]
-url = "http://localhost:11434/"
+url = "http://localhost"
+port = 11434
 endpoint = "api/"
