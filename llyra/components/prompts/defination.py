@@ -50,19 +50,26 @@ class Prompt():
         return iteration_prompt
     
     ## ======================== Additional Method for Chat ======================== ##
-    def iterate(self,role:str,content:str,keep:bool) -> None:
+    def iterate(self,role:Role,input:str,output:str,keep:bool) -> None:
         '''The method is defined for update chat iteration history record.
         Args:
-            role: A string indicate the role of the content.
-            content: A sting indicate the content of the iteration record.
+            role: A dataclass indicate the input and output role of 
+                the iteration record.
+            input: A string indicate the input content of the iteration record.
+            output: A string indicate the output content of the iteration record.
             keep: A boolean indicate whether continue last chat iterarion.
         '''
         # Discriminate whether continue last chat iteration
         if not keep:
             self.iteration = []
-        # Discriminate whether make new iteration record
-        if role != None and content !=None:
-            # Make the prompt record dictionary
-            last_record = make_new_inference(role=role,content=content)
-            # Append iteration record attribute
-            self.iteration.append(last_record)
+        # Discriminate whether make new iteration records
+        if role == None:
+            return
+        # Append input record to iteration record attribute
+        if input:
+            input_record = make_new_inference(role.input,input)
+            self.iteration.append(input_record)
+        # Append output record to iteration record attribute
+        if output:
+            output_record = make_new_inference(role.output,output)
+            self.iteration.append(output_record)

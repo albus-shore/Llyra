@@ -24,49 +24,77 @@ def test_class_initialize(prompt):
 ## ============================ `iterate()` Method Test ============================ ##
 def test_iterate_method(prompt):
     '''Test whether the method can make iteration record properly.'''
+    role = Role('system','user','assistant')
     # Execute iteration record
-    prompt.iterate('user','Hello, there!',True)
+    prompt.iterate(role,
+                   'Hello, there!',
+                   'Greeting, how can I assistant you today?',
+                   True)
     # Validate record value
-    assert prompt.iteration == [{'role': 'user', 'content': 'Hello, there!'}]
+    assert prompt.iteration == [
+        {'role': 'user', 'content': 'Hello, there!'},
+        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
+        ]
 
 def test_iterate_method_keeping_recording(prompt):
     '''
     Test whether the method can make iteration record 
     with former iteration record properly.
     '''
+    role = Role('system','user','assistant')
     # Set former executive value
-    prompt.iteration.append({'role': 'user', 'content': 'Hello, there!'})
+    prompt.iteration.append({'role': 'user', 'content': 'Dummy former record.'})
     # Execute iteration record
-    prompt.iterate('assistant','Greeting, how can I assistant you today?',True)
+    prompt.iterate(role,
+                   'Hello, there!',
+                   'Greeting, how can I assistant you today?',
+                   True)
     # Validate record value
     assert prompt.iteration == [
+        {'role': 'user', 'content': 'Dummy former record.'},
         {'role': 'user', 'content': 'Hello, there!'},
         {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
         ]
     
 def test_iterate_method_starting_new_record(prompt):
     '''Test whether the method can make new iteration record properly.'''
+    role = Role('system','user','assistant')
     # Set former executive value
     prompt.iteration.append({'role': 'user', 'content': 'Hello, there!'})
     # Execute iteration record
-    prompt.iterate('user','Introduce yourself.',False)
+    prompt.iterate(role,
+                   'Introduce yourself.',
+                   'Greeting, how can I assistant you today?',
+                   False)
     # Validate record value
-    assert prompt.iteration == [{'role': 'user', 'content': 'Introduce yourself.'}]
+    assert prompt.iteration == [
+        {'role': 'user', 'content': 'Introduce yourself.'},
+        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
+        ]
 
 def test_iterate_method_ignoring_invalid_record(prompt):
     '''Test whether the method can ignore invalid iteration record properly.'''
     # Execute iteration record
-    prompt.iterate(None,'This is for test.',True)
+    prompt.iterate(None,'This is for test.','Dummy Record',True)
     # Validate record value
     assert prompt.iteration == []
+
+def test_iterate_method_ignoring_not_recording_record(prompt):
+    '''
+    Test whether the method can ignore not recording iteration record 
+    and record recording iteration record at the same time properly.
+    '''
+    role = Role('system','user','assistant')
     # Execute iteration record
-    prompt.iterate('user',None,True)
+    prompt.iterate(role,None,'Dummy Record',True)
     # Validate record value
-    assert prompt.iteration == []
+    assert prompt.iteration == [{'role': 'assistant', 'content': 'Dummy Record'}]
+    # Clear former iteration
+    prompt.iteration = []
     # Execute iteration record
-    prompt.iterate(None,None,True)
+    prompt.iterate(role,'Dummy Record',None,True)
     # Validate record value
-    assert prompt.iteration == []
+    assert prompt.iteration == [{'role': 'user', 'content': 'Dummy Record'}]
 
 ## ============================= `call()` Method Test ============================= ##
 def test_call_method(prompt):
