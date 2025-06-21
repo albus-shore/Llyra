@@ -15,11 +15,12 @@ class Config:
         # Define assistant internal attribute
         self._content:dict = None
 
-    ## ======================== Internal Load Method ======================== ##
+    ## =========================== Internal Load Method =========================== ##
     def _load(self,path:str|Path) -> dict:
         '''The method is defined for load config from default or custom path.
         Args:
-            path: A string indicate the custom path to the config file.
+            path: A string or Path instance 
+                indicate the custom path to the config file.
         '''
         # Discriminate whether loading from custom path or default path
         if path:
