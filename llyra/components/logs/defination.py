@@ -42,7 +42,7 @@ class Log:
         Args:
             model: A string indicate the name of model file.
             prompt: A string indicate the content of additional prompt.
-            role: A dataclass indicate input and output role of
+            role: A dataclass indicate input, output, and prompt role of
                 iterative chat inference.
             input: A string indicate input content for model inference.
             output: A string indicate response of model inference.

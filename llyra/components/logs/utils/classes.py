@@ -12,7 +12,7 @@ class Section:
         id: A integrate indicate the identity of current chat log.
         model: A string indicate the name of model file.
         prompt: A string indicate the content of additional prompt.
-        role: A dataclass indicate input and output role of
+        role: A dataclass indicate input, output, and prompt role of
                 iterative chat inference.
         temperature: A float indicate the model inference temperature.        
     '''
