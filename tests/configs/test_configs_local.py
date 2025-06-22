@@ -1,241 +1,348 @@
 import pytest
-from unittest.mock import patch,MagicMock
-from llyra.local.configs import ConfigLocal
-from pathlib import Path
+from llyra.components.configs import LocalConfig
+from llyra.components.configs.utils import Model
+from llyra.errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
 
 @pytest.fixture
 def config():
-    config = ConfigLocal()
+    config = LocalConfig()
     return config
 
 @pytest.fixture
-def loaded_config():
-    loaded_config = ConfigLocal()
-    loaded_config.load('tests/configs/config_local.json')
+def loaded_config(tmp_path):
+    loaded_config = LocalConfig()
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Load test config content
+    loaded_config.load(test_toml)
     return loaded_config
 
-## ========================== Load Method Test ========================== ##
-def test_load_default_config_file(config):
-    '''Test whether method load config file from default path properly.'''
-    warning = 'Warning: Missing chat format.\n'
-    warning += '\t\t Chat inference may unavailiable '
-    warning += "when chat format not contain in model's metadate "
-    warning += "or not manual updating."
-    with pytest.warns(UserWarning,match=warning):
-        config.load()
-        assert config.model == 'model'
-        assert config.directory == 'models/'
-        assert config.strategy == 'config/strategy.json'
-        assert config.gpu == False
-        assert config.format == None
-        assert config.path == 'models/model.gguf'
-        assert config.ram is False
+## =========================== `__init__() Method Test` =========================== ##
+def test_initialize_method(config):
+    '''Test whether the class can be initialized properly.'''
+    assert config.model == None
+    assert config.format == None
+    assert config.gpu == None
+    assert config.ram == None
+    assert config.path == None
 
-def test_load_config_file_from_path(config):
-    '''Test whether method load config form provided path properly.'''
-    config.load('tests/configs/config_local.json')
-    assert config.model == 'model'
-    assert config.directory == 'models/'
-    assert config.strategy == 'config/strategy.json'
+## ============================= `load()` Method Test ============================= ##
+def test_load_method(config,tmp_path):
+    '''Test whether method can load and read all config parameters properly.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    config.load(test_toml)
+    # Validate loaded value
+    assert config.model == Model('test-model','dummy_directory/','.gguf')
+    assert config.format == "test-format"
+    assert config.gpu == True
+    assert config.ram == False
+    assert config.path == 'dummy_directory/test-model.gguf'
+
+def test_load_method_with_model_name_fix(config,tmp_path):
+    '''Test whether method can auto fix invalid model name parameter properly.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model.gguf"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    config.load(test_toml)
+    # Validate loaded value
+    assert config.model == Model('test-model','dummy_directory/','.gguf')
+    assert config.path == 'dummy_directory/test-model.gguf'
+
+def test_load_method_with_model_directory_fix(config,tmp_path):
+    '''Test whether method can auto fix invalid model directory parameter properly.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    config.load(test_toml)
+    # Validate loaded value
+    assert config.model == Model('test-model','dummy_directory/','.gguf')
+    assert config.path == 'dummy_directory/test-model.gguf'    
+
+def test_load_method_with_model_suffix_fix(config,tmp_path):
+    '''Test whether method can auto fix invalid model suffix parameter properly.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = "gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    config.load(test_toml)
+    # Validate loaded value
+    assert config.model == Model('test-model','dummy_directory/','.gguf')
+    assert config.path == 'dummy_directory/test-model.gguf'        
+
+def test_load_method_with_format_fallback(config,tmp_path):
+    '''Test whether method auto fallback to `None` and rasie warning 
+    when missing `format` parameter.'''
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    warns_message = 'Missing `format` parameter of `local` section in `config.toml`'
+    warns_message = ' , auto-fallback to `None`.'
+    with pytest.warns(RuntimeWarning,match=warns_message):
+        config.load(test_toml)
+    # Validate loaded value
+    assert config.format == None
+
+def test_load_method_with_gpu_fallback(config,tmp_path):
+    '''Test whether method auto fallback to `False` and rasie warning 
+    when missing `gpu` parameter.'''
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    warns_message = 'Missing `gpu` parameter of `local` section in `config.toml`'
+    warns_message = ' , auto-fallback to `False`.'
+    with pytest.warns(RuntimeWarning,match=warns_message):
+        config.load(test_toml)
+    # Validate loaded value
     assert config.gpu == False
-    assert config.format == 'llama-2'
-    assert config.path == 'models/model.gguf'
-    assert config.ram is False
 
-def test_load_config_file_without_model_key(config):
-    '''Test whether method raise exception properly when missing model key.'''
-    with pytest.raises(IndexError,match='Error: Missing model file name parameter.'):
-        config.load('tests/configs/config_missing_model.json')
-
-def test_load_config_file_without_directory_key(config):
-    '''Test whether method raise exception properly when missing directory key.'''
-    with pytest.raises(IndexError,match='Error: Missing model file directory parameter.'):
-        config.load('tests/configs/config_missing_directory.json')
-
-def test_load_config_file_without_strategy_key(config):
-    '''Test whether method show warning properly when missing strategy key.'''
-    warning = 'Warning: Missing inference strategy file.\n'
-    warning += '\t\t Inference unavailiable without manual updating.'
-    with pytest.warns(UserWarning,match=warning):
-        config.load('tests/configs/config_missing_strategy.json')
-        assert config.model == 'model'
-        assert config.directory == 'models/'
-        assert config.strategy == None
-        assert config.gpu == False
-        assert config.format == 'llama-2'
-        assert config.path == 'models/model.gguf'
-        assert config.ram is False
-
-def test_load_config_file_without_format_key(config):
-    '''Test whether method show warning properly when missing strategy key.'''
-    warning = 'Warning: Missing chat format.\n'
-    warning += '\t\t Chat inference may unavailiable '
-    warning += "when chat format not contain in model's metadate "
-    warning += "or not manual updating."
-    with pytest.warns(UserWarning,match=warning):
-        config.load('tests/configs/config_missing_format.json')
-        assert config.model == 'model'
-        assert config.directory == 'models/'
-        assert config.strategy == 'config/strategy.json'
-        assert config.gpu == False
-        assert config.format == None
-        assert config.path == 'models/model.gguf'
-        assert config.ram is False
-
-## ============================= Update Method Test ============================= ##
-def test_update_model_config_parameter(loaded_config):
-    '''Test whether method update model config parameter properly.'''
-    for possible in ['test','test.gguf']:
-        loaded_config.update(model=possible,
-                      directory=None,
-                      strategy=None,
-                      gpu=None,
-                      format=None,
-                      ram=None,)
-        assert loaded_config.model == 'test'
-        assert loaded_config.path == 'models/test.gguf'
-    assert loaded_config.directory == 'models/'
-    assert loaded_config.strategy == 'config/strategy.json'
-    assert loaded_config.gpu == False
-    assert loaded_config.format == 'llama-2'
-    assert loaded_config.ram == False
-
-def test_update_directory_config_parameter(loaded_config):
-    '''Test whether method update directory config parameter properly.'''
-    for possible in ['tests','tests/']:
-        loaded_config.update(model=None,
-                      directory=possible,
-                      strategy=None,
-                      gpu=None,
-                      format=None,
-                      ram=None,)
-        assert loaded_config.directory == 'tests/'
-        assert loaded_config.path == 'tests/model.gguf'
-    assert loaded_config.model == 'model'
-    assert loaded_config.strategy == 'config/strategy.json'
-    assert loaded_config.gpu == False
-    assert loaded_config.format == 'llama-2'
-    assert loaded_config.ram == False
-
-def test_update_strategy_config_parameter(loaded_config):
-    '''Test whether method update strategy config parameter properly.
-    And show warning when setting strategy to empty properly.
+def test_load_method_with_ram_fallback(config,tmp_path):
+    '''Test whether method auto fallback to `False` and rasie warning 
+    when missing `ram` parameter.'''
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    suffix = ".gguf"
     '''
-    loaded_config.update(model=None,
-                  directory=None,
-                  strategy='tests/config/strategy.json',
-                  gpu=None,
-                  format=None,
-                  ram=None,)
-    assert loaded_config.model == 'model'
-    assert loaded_config.directory == 'models/'
-    assert loaded_config.strategy == 'tests/config/strategy.json'
-    assert loaded_config.gpu == False
-    assert loaded_config.format == 'llama-2'
-    assert loaded_config.path == 'models/model.gguf'
-    assert loaded_config.ram == False
-    warning = 'Warning: Missing inference strategy file.\n'
-    warning += '\t\t Inference unavailiable without manual updating.'
-    with pytest.warns(UserWarning,match=warning):
-        loaded_config.update(model=None,
-                  directory=None,
-                  strategy='',
-                  gpu=None,
-                  format=None,
-                  ram=None,)
-        assert loaded_config.model == 'model'
-        assert loaded_config.directory == 'models/'
-        assert loaded_config.strategy == ''
-        assert loaded_config.gpu == False
-        assert loaded_config.format == 'llama-2'
-        assert loaded_config.path == 'models/model.gguf'
-        assert loaded_config.ram == False
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    warns_message = 'Missing `ram` parameter of `local` section in `config.toml`'
+    warns_message = ' , auto-fallback to `False`.'
+    with pytest.warns(RuntimeWarning,match=warns_message):
+        config.load(test_toml)
+    # Validate loaded value
+    assert config.ram == False
 
-def test_update_format_config_parameter(loaded_config):
-    '''Test whether method update format config parameter properly.
-    And show warning when setting format to empty properly.
+def test_load_method_without_model_name_parameter(config,tmp_path):
+    '''Test whether method raise exception properly
+    without `name` parameter in `local.model` section.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    directory = "dummy_directory/"
+    suffix = ".gguf"
     '''
-    loaded_config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=None,
-                  format='openai',
-                  ram=None,)
-    assert loaded_config.model == 'model'
-    assert loaded_config.directory == 'models/'
-    assert loaded_config.strategy == 'config/strategy.json'
-    assert loaded_config.gpu == False
-    assert loaded_config.format == 'openai'
-    assert loaded_config.path == 'models/model.gguf'
-    assert loaded_config.ram == False
-    warning = 'Warning: Missing chat format.\n'
-    warning += '\t\t Chat inference may unavailiable '
-    warning += "when chat format not contain in model's metadate "
-    warning += "or not manual updating."
-    with pytest.warns(UserWarning,match=warning):
-        loaded_config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=None,
-                  format='',
-                  ram=None,)
-        assert loaded_config.model == 'model'
-        assert loaded_config.directory == 'models/'
-        assert loaded_config.strategy == 'config/strategy.json'
-        assert loaded_config.gpu == False
-        assert loaded_config.format == ''
-        assert loaded_config.path == 'models/model.gguf'
-        assert loaded_config.ram == False
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    with pytest.raises(ConfigParameterMissingError,
+        match='Missing `name` parameter of `local.model` section in `config.toml`.'):
+        config.load(test_toml)
 
-def test_update_gpu_config_parameter(loaded_config):
-    '''Test whether method update gpu config parameter properly.'''
-    loaded_config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=True,
-                  format=None,
-                  ram=None,)
-    assert loaded_config.model == 'model'
-    assert loaded_config.directory == 'models/'
-    assert loaded_config.strategy == 'config/strategy.json'
-    assert loaded_config.gpu == True
-    assert loaded_config.format == 'llama-2'
-    assert loaded_config.path == 'models/model.gguf'
-    assert loaded_config.ram == False
+def test_load_method_without_model_directory_parameter(config,tmp_path):
+    '''Test whether method raise exception properly
+    without `directory` parameter in `local.model` section.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    suffix = ".gguf"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    with pytest.raises(ConfigParameterMissingError,
+        match='Missing `directory` parameter of `local.model` section in `config.toml`.'):
+        config.load(test_toml)        
 
-def test_update_ram_config_parameter(loaded_config):
-    '''Test whether method update ram config parameter properly.'''
-    loaded_config.update(model=None,
-                  directory=None,
-                  strategy=None,
-                  gpu=None,
-                  format=None,
-                  ram=True,)
-    assert loaded_config.model == 'model'
-    assert loaded_config.directory == 'models/'
-    assert loaded_config.strategy == 'config/strategy.json'
+def test_load_method_without_model_suffix_parameter(config,tmp_path):
+    '''Test whether method raise exception properly
+    without `suffix` parameter in `local.model` section.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    [local.model]
+    name = "test-model"
+    directory = "dummy_directory/"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    with pytest.raises(ConfigParameterMissingError,
+        match='Missing `suffix` parameter of `local.model` section in `config.toml`.'):
+        config.load(test_toml)   
+
+def test_load_method_without_model_section(config,tmp_path):
+    '''Test whether method raise exception properly
+    without `model` section in `local` section.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    [local]
+    format = "test-format"
+    gpu = true
+    ram = false
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    with pytest.raises(ConfigSectionMissingError,
+        match='local.model'):
+        config.load(test_toml)               
+
+def test_load_method_without_local_section(config,tmp_path):
+    '''Test whether method raise exception properly
+    without `local` section.'''
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    with pytest.raises(ConfigSectionMissingError,
+        match='local'):
+        config.load(test_toml)            
+
+## ============================ `update()` Method Test ============================ ##
+def test_update_method(loaded_config):
+    '''Test whether method can update not key config parameter properly.'''
+    # Execute config update        
+    loaded_config.update(None,False,True)
+    # Validate updated value
+    assert loaded_config.format == None
     assert loaded_config.gpu == False
-    assert loaded_config.format == 'llama-2'
-    assert loaded_config.path == 'models/model.gguf'
     assert loaded_config.ram == True
 
-## ========================== Write Method Test ========================== ##
-def test_writing_current_config_into_file(loaded_config):
-    '''Test whether method write current config into file properly.'''
-    loaded_config.update(model='test',
-                  directory='test/',
-                  strategy='tests/config/strategy.json',
-                  gpu=True,
-                  format='openai',
-                  ram=False,)
-    with patch.object(Path,'exists',return_value=False):
-        with patch.object(Path,'write_text') as mock_write:
-            loaded_config.write()
-            content = mock_write.call_args[0][0]
-            assert mock_write.called
-            assert '"model": "test"' in content
-            assert '"directory": "test/"' in content
-            assert '"strategy": "tests/config/strategy.json"' in content
-            assert '"gpu": true' in content
-            assert '"format": "openai"' in content
-            assert '"ram": false' in content
+def test_update_method_ignoring_format_parameters(loaded_config):    
+    '''Test whether method can ignore `format` parameter and
+    update other not key config parameter at the same time properly.'''
+    # Execute config update ignoring format        
+    loaded_config.update('',False,True)
+    # Validate updated value
+    assert loaded_config.format == 'test-format'
+    assert loaded_config.gpu == False
+    assert loaded_config.ram == True
+
+def test_update_method_ignoring_gpu_parameters(loaded_config):    
+    '''Test whether method can ignore `gpu` parameter and
+    update other not key config parameter at the same time properly.'''
+    # Execute config update ignoring format        
+    loaded_config.update(None,None,True)
+    # Validate updated value
+    assert loaded_config.format == None
+    assert loaded_config.gpu == True
+    assert loaded_config.ram == True    
+
+def test_update_method_ignoring_ram_parameters(loaded_config):    
+    '''Test whether method can ignore `gpu` parameter and
+    update other not key config parameter at the same time properly.'''
+    # Execute config update ignoring format        
+    loaded_config.update(None,False,None)
+    # Validate updated value
+    assert loaded_config.format == None
+    assert loaded_config.gpu == False
+    assert loaded_config.ram == False        
