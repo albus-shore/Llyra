@@ -1,6 +1,0 @@
-{
-    "url": "http://localhost:11434/",
-    "endpoint": "api/",
-    "strategy": "config/config-remote.json",
-    "stream": false
-}
