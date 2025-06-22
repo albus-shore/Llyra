@@ -11,7 +11,7 @@ def config():
 ## =========================== `__init__()` Method Test =========================== ##
 def test_initialize_method(config):
     '''Test whether the class can be initialized properly.'''
-    assert config.path == Path('configs/config.toml')
+    assert config._path == Path('configs/config.toml')
     assert config.strategy == None
     assert config._content == None
 
@@ -21,7 +21,7 @@ def test_load_config_file_from_default_path(config):
     # Execute config load
     config._load(None)
     # Validate loaded value
-    assert config.path == Path('configs/config.toml')
+    assert config._path == Path('configs/config.toml')
     assert config.strategy == Path("configs/strategy.toml")
     assert config._content == {
         'global': {
@@ -63,7 +63,7 @@ def test_load_config_file_from_Path_object(config,tmp_path):
     # Execute config load
     config._load(test_toml)
     # Validate loaded value
-    assert config.path == test_toml
+    assert config._path == test_toml
     assert config.strategy == Path("dummy_directory/dummy_strategy.toml")
     assert config._content == {
         'global': {
@@ -93,7 +93,7 @@ def test_load_config_file_from_string_path(config,tmp_path):
     # Execute config load
     config._load(str(test_toml))
     # Validate loaded value
-    assert config.path == test_toml
+    assert config._path == test_toml
     assert config.strategy == Path("dummy_directory/dummy_strategy.toml")
     assert config._content == {
         'global': {
@@ -111,7 +111,7 @@ def test_load_config_file_when_missing_file(config):
     '''Test whether method raise exception properly
     when load config from default path and missing it.'''
     # Override default path
-    config.path = Path('config/config.toml')
+    config._path = Path('config/config.toml')
     # Execute config load
     with pytest.raises(FileNotFoundError,match='Missing config file.'):
         config._load(None)

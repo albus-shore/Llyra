@@ -8,11 +8,10 @@ class Config:
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
         '''The method is defined for initializing Config class object.'''
-        # Define default path to config file
-        self.path:Path = Path('configs/config.toml')
         # Define global config attribute
         self.strategy:Path = None
         # Define assistant internal attribute
+        self._path:Path = Path('configs/config.toml')
         self._content:dict = None
 
     ## =========================== Internal Load Method =========================== ##
@@ -25,12 +24,12 @@ class Config:
         # Discriminate whether loading from custom path or default path
         if path:
             if type(path) == Path:
-                self.path = path
+                self._path = path
             else:
-                self.path:Path = Path(path)
+                self._path:Path = Path(path)
         # Load config file content
         try:
-            with self.path.open('rb') as obj:
+            with self._path.open('rb') as obj:
                 self._content = tomllib.load(obj)
         except FileNotFoundError:
             if path:
