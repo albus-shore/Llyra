@@ -8,7 +8,7 @@ class Prompt():
     def __init__(self) -> None:
         '''The method is defined for initialize Prompt class object.'''
         # Initialize chat iteration attribute
-        self.iteration:list = []
+        self._iteration:list = []
 
     ## ============================= Generate Methods ============================= ##
     def call(self,content:str) -> str:
@@ -37,7 +37,7 @@ class Prompt():
         prompt = role.prompt
         input = role.input
         # Get iteration record
-        iteration_prompt = self.iteration[:]
+        iteration_prompt = self._iteration[:]
         # Discrinimate whether and how to add additional prompt
         if addition:
             additional_prompt = make_new_inference(role=prompt,
@@ -61,15 +61,15 @@ class Prompt():
         '''
         # Discriminate whether continue last chat iteration
         if not keep:
-            self.iteration = []
+            self._iteration = []
         # Discriminate whether make new iteration records
         if role == None:
             return
         # Append input record to iteration record attribute
         if input:
             input_record = make_new_inference(role.input,input)
-            self.iteration.append(input_record)
+            self._iteration.append(input_record)
         # Append output record to iteration record attribute
         if output:
             output_record = make_new_inference(role.output,output)
-            self.iteration.append(output_record)
+            self._iteration.append(output_record)

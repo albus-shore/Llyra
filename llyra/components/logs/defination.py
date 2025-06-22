@@ -9,7 +9,7 @@ class Log:
         '''The method is defined to initialize Log class object.'''
         # Initialize inference history attributes
         self.id = 0
-        self.history = []
+        self._history = []
 
     ## ============================== Record Methods ============================== ##
     def call(self,model:str,
@@ -28,7 +28,7 @@ class Log:
         new_iteration = make_new_iteration(input,output)
         new_section.iteration.append(new_iteration)
         # Append history attribute
-        self.history.append(new_section)
+        self._history.append(new_section)
         # Update history ID
         self.id += 1
 
@@ -50,12 +50,12 @@ class Log:
             keep: A boolean indicate whether continue the iteration.     
         '''
         # Discriminate whether continue the iteration
-        if self.history:
-            record = self.history[-1]
+        if self._history:
+            record = self._history[-1]
         else:
             record = Section(None,None,None,None,None,None)
         if record.type == 'chat' and keep:
-            section = self.history.pop(-1)
+            section = self._history.pop(-1)
         else:
             # Make history content of the inference
             section = Section(self.id,'chat',model,prompt,role,temperature)
@@ -66,7 +66,7 @@ class Log:
         # Append history intertion
         section.iteration.append(new_iteration)
         # Append history attribute
-        self.history.append(section)
+        self._history.append(section)
 
 ## ============================== Record Read Method ============================== ##
     def get(self,id:int) -> dict | list:
@@ -83,7 +83,7 @@ class Log:
         if id >= 0:
             # Seek and transfrom specific log record
             try:
-                section = self.history[id]
+                section = self._history[id]
             except IndexError:
                 raise IndexError('Error: Record not created.')
             else:
@@ -91,7 +91,7 @@ class Log:
         else:
             # Transform all log records
             output = []
-            for section in self.history:
+            for section in self._history:
                 output.append(convert2readable_log(section))
         # Return reasonable log record
         return output

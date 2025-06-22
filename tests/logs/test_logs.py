@@ -25,7 +25,7 @@ def recorded_log():
              prompt=prompt,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
-            temperature=0.6,
+             temperature=0.6,
              keep=True)
     # Set third log record
     recorded_log.call(model='model',
@@ -40,7 +40,7 @@ def recorded_log():
 def test_initialize_method(log):
     '''Test whether the class can be initialized properly.'''
     assert log.id == 0
-    assert log.history == []
+    assert log._history == []
 
 ## ============================= `call()` Method Test ============================= ##
 def test_call_method(log):
@@ -54,11 +54,11 @@ def test_call_method(log):
     iteration = make_new_iteration('hello, there!',
                                    'hello, how can I assist you today?')
     section = Section(0,'call','model',None,None,0.6)
-    section.create_at = log.history[0].create_at
+    section.create_at = log._history[0].create_at
     section.iteration.append(iteration)
     # Validate record value
     assert log.id == 1
-    assert log.history == [section]
+    assert log._history == [section]
     
 ## ============================= `chat()` method test ============================= ##    
 def test_chat_method(log):
@@ -77,11 +77,11 @@ def test_chat_method(log):
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
     section = Section(0,'chat','model',prompt,role,0.6)
-    section.create_at = log.history[0].create_at
+    section.create_at = log._history[0].create_at
     section.iteration.append(iteration)
     # Validate record value
     assert log.id == 1
-    assert log.history == [section]
+    assert log._history == [section]
 
 def test_chat_method_keeping_recording(log):
     '''Test whether the method can keep recording inference history properly.'''
@@ -94,7 +94,7 @@ def test_chat_method_keeping_recording(log):
     section = Section(0,'chat','model',prompt,role,0.6)
     section.create_at = 0
     section.iteration.append(iteration)
-    log.history.append(section)
+    log._history.append(section)
     log.id += 1
     # Execute iterative chat log record
     log.chat(model='model',
@@ -109,7 +109,7 @@ def test_chat_method_keeping_recording(log):
     section.iteration.append(iteration)
     # Validate record value
     assert log.id == 1
-    assert log.history == [section]
+    assert log._history == [section]
 
 def test_chat_method_not_keeping_recording_manually(log):
     '''Test whether the method can stop keeping recording inference history properly
@@ -123,7 +123,7 @@ def test_chat_method_not_keeping_recording_manually(log):
     former_section = Section(0,'chat','model',prompt,role,0.6)
     former_section.create_at = 0
     former_section.iteration.append(iteration)
-    log.history.append(former_section)
+    log._history.append(former_section)
     log.id += 1
     # Execute iterative chat log record
     log.chat(model='model',
@@ -136,11 +136,11 @@ def test_chat_method_not_keeping_recording_manually(log):
     iteration = make_new_iteration('Good day!',
                                    'Greeting, how can I assist you today?')
     section = Section(1,'chat','model',prompt,role,0.6)
-    section.create_at = log.history[1].create_at
+    section.create_at = log._history[1].create_at
     section.iteration.append(iteration)
     # Validate record value
     assert log.id == 2
-    assert log.history == [former_section,section]
+    assert log._history == [former_section,section]
 
 def test_chat_method_not_keeping_recording_automatically(log):
     '''Test whether the method can stop keeping recording inference history properly
@@ -151,7 +151,7 @@ def test_chat_method_not_keeping_recording_automatically(log):
     former_section = Section(0,'call','model',None,None,0.6)
     former_section.create_at = 0
     former_section.iteration.append(iteration)
-    log.history.append(former_section)
+    log._history.append(former_section)
     log.id += 1
     # Set executive value
     prompt = 'This is for test.'
@@ -167,11 +167,11 @@ def test_chat_method_not_keeping_recording_automatically(log):
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
     section = Section(1,'chat','model',prompt,role,0.6)
-    section.create_at = log.history[1].create_at
+    section.create_at = log._history[1].create_at
     section.iteration.append(iteration)
     # Validate record value
     assert log.id == 2
-    assert log.history == [former_section,section]
+    assert log._history == [former_section,section]
 
 ## ============================== `get()` method test ============================== ##
 def test_get_method_with_specific_id(recorded_log):
@@ -206,7 +206,7 @@ def test_get_method_for_all_logs(recorded_log):
         'prompt':None,
         'role':None,
         'temperature': 0.6,
-        'create_at': recorded_log.history[0].create_at,
+        'create_at': recorded_log._history[0].create_at,
         'iteration':[{'query':'hello, there!',
                       'response':'hello, how can I assist you today?'}],
         },{
@@ -220,7 +220,7 @@ def test_get_method_for_all_logs(recorded_log):
             'output': 'assistant',
             },
         'temperature': 0.6,
-        'create_at': recorded_log.history[1].create_at,
+        'create_at': recorded_log._history[1].create_at,
         'iteration': [{'query':'Hello, there!',
                        'response':'Greeting, how can I assist you today?'}],
         },{
@@ -230,7 +230,7 @@ def test_get_method_for_all_logs(recorded_log):
         'prompt':None,
         'role':None,
         'temperature': 0.6,
-        'create_at': recorded_log.history[2].create_at,    
+        'create_at': recorded_log._history[2].create_at,    
         'iteration': [{'query':'Greeting, there!',
                        'response':'hello, how can I assist you today?'}],
         }]
