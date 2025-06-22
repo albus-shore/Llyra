@@ -1,5 +1,5 @@
 import pytest
-from llyra.components.configs import LocalConfig
+from llyra.components import LocalConfig
 from llyra.components.configs.utils import Model
 from llyra.errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
 
