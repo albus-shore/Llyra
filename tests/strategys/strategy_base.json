@@ -1,9 +1,0 @@
-[{
-    "type": "chat",
-    "role": {
-        "prompt": "system",
-        "input": "user",
-        "output": "assistant"
-        },
-    "prompt": "tests/strategys/prompt.txt"
-}]
