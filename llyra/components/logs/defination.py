@@ -33,7 +33,7 @@ class Log:
         self.id += 1
 
     def chat(self,model:str,
-              prompt:str,
+              addition:str,
               role:Role,
               input:str,output:str,
               temperature:float,
@@ -41,7 +41,7 @@ class Log:
         '''The method is defined to record basic log for iterative chat inference.
         Args:
             model: A string indicate the name of model file.
-            prompt: A string indicate the content of additional prompt.
+            addition: A string indicate the content of additional prompt.
             role: A dataclass indicate input, output, and prompt role of
                 iterative chat inference.
             input: A string indicate input content for model inference.
@@ -58,7 +58,7 @@ class Log:
             section = self._history.pop(-1)
         else:
             # Make history content of the inference
-            section = Section(self.id,'chat',model,prompt,role,temperature)
+            section = Section(self.id,'chat',model,addition,role,temperature)
             # Update history ID
             self.id += 1
         # Make iteration content

@@ -18,11 +18,11 @@ def recorded_log():
              temperature=0.6)
     # Set second log record
     ## Set executive value
-    prompt = 'This is for test.'
+    addition = 'This is for test.'
     role = Role('system','user','assistant')
     ## Execute iterative chat log record
     recorded_log.chat(model='model',
-             prompt=prompt,
+             addition=addition,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
              temperature=0.6,
@@ -64,11 +64,11 @@ def test_call_method(log):
 def test_chat_method(log):
     '''Test whether the method can record inference history properly.'''
     # Set executive value
-    prompt = 'This is for test.'
+    addition = 'This is for test.'
     role = Role('system','user','assistant')
     # Execute iterative chat log record
     log.chat(model='model',
-             prompt=prompt,
+             addition=addition,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
              temperature=0.6,
@@ -76,7 +76,7 @@ def test_chat_method(log):
     # Set stardard value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
-    section = Section(0,'chat','model',prompt,role,0.6)
+    section = Section(0,'chat','model',addition,role,0.6)
     section.create_at = log._history[0].create_at
     section.iteration.append(iteration)
     # Validate record value
@@ -86,19 +86,19 @@ def test_chat_method(log):
 def test_chat_method_keeping_recording(log):
     '''Test whether the method can keep recording inference history properly.'''
     # Set executive value
-    prompt = 'This is for test.'
+    addition = 'This is for test.'
     role = Role('system','user','assistant')
     # Set former executive value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
-    section = Section(0,'chat','model',prompt,role,0.6)
+    section = Section(0,'chat','model',addition,role,0.6)
     section.create_at = 0
     section.iteration.append(iteration)
     log._history.append(section)
     log.id += 1
     # Execute iterative chat log record
     log.chat(model='model',
-             prompt=prompt,
+             addition=addition,
              role=role,
              input='Good day!',output='Greeting, how can I assist you today?',
              temperature=0.6,
@@ -115,19 +115,19 @@ def test_chat_method_not_keeping_recording_manually(log):
     '''Test whether the method can stop keeping recording inference history properly
     when `keep` is set to `False`.'''
     # Set executive value
-    prompt = 'This is for test.'
+    addition = 'This is for test.'
     role = Role('system','user','assistant')
     # Set former executive value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
-    former_section = Section(0,'chat','model',prompt,role,0.6)
+    former_section = Section(0,'chat','model',addition,role,0.6)
     former_section.create_at = 0
     former_section.iteration.append(iteration)
     log._history.append(former_section)
     log.id += 1
     # Execute iterative chat log record
     log.chat(model='model',
-             prompt=prompt,
+             addition=addition,
              role=role,
              input='Good day!',output='Greeting, how can I assist you today?',
              temperature=0.6,
@@ -135,7 +135,7 @@ def test_chat_method_not_keeping_recording_manually(log):
     # Set stardard value
     iteration = make_new_iteration('Good day!',
                                    'Greeting, how can I assist you today?')
-    section = Section(1,'chat','model',prompt,role,0.6)
+    section = Section(1,'chat','model',addition,role,0.6)
     section.create_at = log._history[1].create_at
     section.iteration.append(iteration)
     # Validate record value
@@ -154,11 +154,11 @@ def test_chat_method_not_keeping_recording_automatically(log):
     log._history.append(former_section)
     log.id += 1
     # Set executive value
-    prompt = 'This is for test.'
+    addition = 'This is for test.'
     role = Role('system','user','assistant')
     # Execute iterative chat log record
     log.chat(model='model',
-             prompt=prompt,
+             addition=addition,
              role=role,
              input='Hello, there!',output='Greeting, how can I assist you today?',
              temperature=0.6,
@@ -166,7 +166,7 @@ def test_chat_method_not_keeping_recording_automatically(log):
     # Set stardard value
     iteration = make_new_iteration('Hello, there!',
                                    'Greeting, how can I assist you today?')
-    section = Section(1,'chat','model',prompt,role,0.6)
+    section = Section(1,'chat','model',addition,role,0.6)
     section.create_at = log._history[1].create_at
     section.iteration.append(iteration)
     # Validate record value
@@ -182,7 +182,7 @@ def test_get_method_with_specific_id(recorded_log):
         'id': 1,
         'type': 'chat',
         'model': 'model',
-        'prompt': 'This is for test.',
+        'addition': 'This is for test.',
         'role': {
             'prompt': 'system',
             'input': 'user',
@@ -203,7 +203,7 @@ def test_get_method_for_all_logs(recorded_log):
         'id':0,
         'type':'call',
         'model':'model',
-        'prompt':None,
+        'addition':None,
         'role':None,
         'temperature': 0.6,
         'create_at': recorded_log._history[0].create_at,
@@ -213,7 +213,7 @@ def test_get_method_for_all_logs(recorded_log):
         'id': 1,
         'type': 'chat',
         'model': 'model',
-        'prompt': 'This is for test.',
+        'addition': 'This is for test.',
         'role': {
             'prompt': 'system',
             'input': 'user',
@@ -227,7 +227,7 @@ def test_get_method_for_all_logs(recorded_log):
         'id':2,
         'type':'call',
         'model':'model',
-        'prompt':None,
+        'addition':None,
         'role':None,
         'temperature': 0.6,
         'create_at': recorded_log._history[2].create_at,    

@@ -11,7 +11,7 @@ class Section:
     Args:
         id: A integrate indicate the identity of current chat log.
         model: A string indicate the name of model file.
-        prompt: A string indicate the content of additional prompt.
+        addition: A string indicate the content of additional prompt.
         role: A dataclass indicate input, output, and prompt role of
                 iterative chat inference.
         temperature: A float indicate the model inference temperature.        
@@ -19,7 +19,7 @@ class Section:
     id: int 
     type: Literal['call','chat']
     model: str
-    prompt: str | None
+    addition: str | None
     role: Role | None
     temperature: float
     iteration: list = field(default_factory=list)
