@@ -9,7 +9,7 @@ def config():
     config = RemoteConfig()
     return config
 
-## =========================== `__init__() Method Test` =========================== ##
+## =========================== `__init__()` Method Test =========================== ##
 def test_initialize_method(config):
     '''Test whether the class can be initialized properly.'''
     assert config.server == None
