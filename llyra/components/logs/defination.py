@@ -1,5 +1,6 @@
 from .utils import make_new_iteration, convert2readable_log, Section
 from ..utils import Role
+from copy import deepcopy
 
 class Log:
     '''The class is defined to define universal attributes and methods,
@@ -83,7 +84,7 @@ class Log:
         if id >= 0:
             # Seek and transfrom specific log record
             try:
-                section = self._history[id]
+                section = deepcopy(self._history[id])
             except IndexError:
                 raise IndexError('Error: Record not created.')
             else:
@@ -92,6 +93,6 @@ class Log:
             # Transform all log records
             output = []
             for section in self._history:
-                output.append(convert2readable_log(section))
+                output.append(convert2readable_log(deepcopy(section)))
         # Return reasonable log record
         return output
