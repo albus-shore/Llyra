@@ -49,11 +49,13 @@ class Remote:
         # Return model response
         return self.response
     
-    def chat(self,message:str,keep:bool) -> None:
+    def chat(self,message:str,keep:bool) -> str:
         '''The method is defined for fulfill iterative chat inference.
         Args:
             message: A string indicate the input content for chat inference.
             keep: A boolean indicate whether continue last chat iteration.
+        Returns:
+            response: A string indicate the output content from model inference.
         '''
         # Get input content
         self.query = message
