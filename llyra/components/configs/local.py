@@ -63,21 +63,21 @@ class LocalConfig(Config):
             self.format = content['format']
         except KeyError:
             message = 'Missing `format` parameter of `local` section in `config.toml`'
-            message = ' , auto-fallback to `None`.'
+            message += ' , auto-fallback to `None`.'
             warn(message,RuntimeWarning)
             self.format = None
         try:
             self.gpu = content['gpu']
         except KeyError:
             message = 'Missing `gpu` parameter of `local` section in `config.toml`'
-            message = ' , auto-fallback to `False`.'
+            message += ' , auto-fallback to `False`.'
             warn(message,RuntimeWarning)
             self.gpu = False
         try:
             self.ram = content['ram']
         except KeyError:
             message = 'Missing `ram` parameter of `local` section in `config.toml`'
-            message = ' , auto-fallback to `False`.'
+            message += ' , auto-fallback to `False`.'
             warn(message,RuntimeWarning)
             self.ram = False
         # Make model file path

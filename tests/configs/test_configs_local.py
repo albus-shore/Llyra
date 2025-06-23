@@ -153,7 +153,7 @@ def test_load_method_with_format_fallback(config,tmp_path):
     test_toml.write_text(content)
     # Execute config load
     warns_message = 'Missing `format` parameter of `local` section in `config.toml`'
-    warns_message = ' , auto-fallback to `None`.'
+    warns_message += ' , auto-fallback to `None`.'
     with pytest.warns(RuntimeWarning,match=warns_message):
         config.load(test_toml)
     # Validate loaded value
@@ -177,7 +177,7 @@ def test_load_method_with_gpu_fallback(config,tmp_path):
     test_toml.write_text(content)
     # Execute config load
     warns_message = 'Missing `gpu` parameter of `local` section in `config.toml`'
-    warns_message = ' , auto-fallback to `False`.'
+    warns_message += ' , auto-fallback to `False`.'
     with pytest.warns(RuntimeWarning,match=warns_message):
         config.load(test_toml)
     # Validate loaded value
@@ -201,7 +201,7 @@ def test_load_method_with_ram_fallback(config,tmp_path):
     test_toml.write_text(content)
     # Execute config load
     warns_message = 'Missing `ram` parameter of `local` section in `config.toml`'
-    warns_message = ' , auto-fallback to `False`.'
+    warns_message += ' , auto-fallback to `False`.'
     with pytest.warns(RuntimeWarning,match=warns_message):
         config.load(test_toml)
     # Validate loaded value
