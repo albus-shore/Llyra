@@ -2,7 +2,7 @@ from .utils import make_new_inference
 from ..utils import Role
 
 class Prompt():
-    '''The class is defined to define basic attributes and internal methods,
+    '''The class is defined to define universal attributes and methods,
     for generating prompts for model inference..'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:

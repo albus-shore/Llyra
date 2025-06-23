@@ -2,7 +2,7 @@ from .utils import make_new_iteration, convert2readable_log, Section
 from ..utils import Role
 
 class Log:
-    '''The class is defined to define basic attributes and internal methods,
+    '''The class is defined to define universal attributes and methods,
     for working with logs.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
