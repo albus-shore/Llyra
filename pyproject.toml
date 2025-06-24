@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llyra"
-version = "0.1.2"
+version = "0.2.0"
 description = "A lightweight interface for calling LLMs with strategy."
 authors = [
     { name="Albus Shore", email="dev@albus-shore.net" }
