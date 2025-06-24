@@ -1,9 +1,0 @@
-[{
-    "type": "call",
-    "role":{
-        "input": "<|User|>",
-        "output": "<|Assistant|>"
-        },
-    "stop": "<|User|>",
-    "max_token": 128e3
-}]

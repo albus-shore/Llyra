@@ -1,6 +1,6 @@
 from llyra import Llyra
 
-model = Llyra('local')
+model = Llyra('remote')
 
 response = model.chat('Evening!',True)
 

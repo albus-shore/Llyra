@@ -1,2 +1,1 @@
-from .local import Local
-from .remote import Remote
+from .main import Llyra

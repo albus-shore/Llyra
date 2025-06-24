@@ -1,0 +1,1 @@
+from .funcs import convert_str2list

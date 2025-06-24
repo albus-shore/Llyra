@@ -1,8 +1,8 @@
 from llyra import Llyra
 
-model = Llyra('local')
+model = Llyra('remote')
 
-response = model.call('<|User|>Evening!<|Assistant|>')
+response = model.call('Evening!')
 
 print(response)
 

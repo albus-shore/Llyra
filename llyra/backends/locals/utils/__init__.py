@@ -1,0 +1,1 @@
+from .funcs import set_gpu
