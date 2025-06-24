@@ -1,4 +1,4 @@
-def convert2list(parameter:str|list) -> list:
+def convert_str2list(parameter:str|list) -> list:
     '''The function is defind for convert string parameter to list 
     for the needs of remote backend.
     Args:
