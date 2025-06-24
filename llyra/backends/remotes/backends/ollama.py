@@ -1,6 +1,6 @@
 import requests
 from .utils import convert_str2list
-from ....errors import ModelNotAvailableError
+from ....errors.remotes import RemoteServerConnectionError, RemoteServiceNotCompatibleError, RemoteModelNotAvailableError, RemoteServiceError
 
 class Ollama:
     '''The class is defined for abstract basic methods 
@@ -16,16 +16,16 @@ class Ollama:
         try:
             test = requests.get(url=url+'tags')
         except requests.RequestException:
-            raise ConnectionError("Can't connect to server.")
+            raise RemoteServerConnectionError()
         try:
             response_content = test.json()
             available_models = response_content['models']
             model_names = [available_model['name'] 
                 for available_model in available_models]
         except (requests.RequestException, KeyError):
-            raise ConnectionError("Can't find compatible service.")
+            raise RemoteServiceNotCompatibleError()
         if model not in model_names:
-            raise ModelNotAvailableError(model)
+            raise RemoteModelNotAvailableError(model)
         # Get input attributes
         self.url = url
         self.model = model
@@ -59,7 +59,10 @@ class Ollama:
                              stream=False)
         response_content = call.json()
         # Extract response string
-        response = response_content['response']
+        try:
+            response = response_content['response']
+        except KeyError:
+            raise RemoteServiceError(response_content['error'])
         # Return remote inference response
         return response
     
@@ -91,6 +94,11 @@ class Ollama:
                              stream=False)
         response_content = chat.json()
         # Extract response string
-        response = response_content['message']['content']
+        try:
+            response_message = response_content['message']
+        except KeyError:
+            raise RemoteServiceError(response_content['error'])
+        else:
+            response = response_message['content']
         # Return remote inference response
         return response
