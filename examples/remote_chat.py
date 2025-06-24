@@ -6,7 +6,7 @@ response = model.chat('Evening!',True)
 
 print(response)
 
-response = model.chat("What's my first world's in learning language?",True)
+response = model.chat("What's my first word's in learning language?",True)
 
 print(response)
 
