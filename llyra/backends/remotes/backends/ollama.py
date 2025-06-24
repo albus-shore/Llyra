@@ -1,4 +1,5 @@
 import requests
+from .utils import convert2list
 from ....errors import ModelNotAvailableError
 
 class Ollama:
@@ -42,7 +43,7 @@ class Ollama:
         '''
         # Make options
         options = {
-            'stop': stop,
+            'stop': convert2list(stop),
             'temperature': temperature
             }
         # Make request body
@@ -74,7 +75,7 @@ class Ollama:
         '''
         # Make options
         options = {
-            'stop': stop,
+            'stop': convert2list(stop),
             'temperature': temperature
             }
         # Make request body
