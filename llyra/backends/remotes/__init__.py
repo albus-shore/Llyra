@@ -1,1 +1,1 @@
-from .defination import Remote
+from .definition import Remote
