@@ -28,7 +28,7 @@ class Strategy:
         except FileNotFoundError:
             raise FileNotFoundError('Strategy file not found in provided path.')
         # Read call strategy parameters
-        ## Extra all call strategy parameters
+        ## Extract all call strategy parameters
         try:
             call = content['call']
         except KeyError:
@@ -50,7 +50,7 @@ class Strategy:
             temperature = 0
         self.call:Call = Call(stop,temperature)
         # Read chat strategy parameters
-        ## Extra all chat strategy parameters
+        ## Extract all chat strategy parameters
         try:
             chat = content['chat']
         except KeyError:

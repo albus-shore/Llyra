@@ -47,7 +47,7 @@ class Local:
         response = self.backend.create_completion(prompt=prompt,
             stop=self.strategy.call.stop,
             temperature=self.strategy.call.temperature)
-        # Extra response content
+        # Extract response content
         self.response = response['choices'][0]['text']
         # Make log record
         self.log.call(model=self.config.model.name,
@@ -76,7 +76,7 @@ class Local:
         response = self.backend.create_chat_completion(messages=prompt,
             stop=self.strategy.chat.stop,
             temperature=self.strategy.chat.temperature)
-        # Extra response content
+        # Extract response content
         self.response = response['choices'][0]['message']['content']
         # Update prompt section content
         self.prompt.iterate(role=self.strategy.chat.role,
