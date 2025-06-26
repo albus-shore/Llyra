@@ -85,7 +85,7 @@ class Llyra:
     def get_log(self,id:int) -> dict|list:
         '''The method is defined to read log records in reasonable way.
         Args:
-            id: A integrate indicate the specific inference log.\n
+            id: A integer indicate the specific inference log.\n
                 Start from 0. \n
                 And read all records by set it minus.
         Returns:
