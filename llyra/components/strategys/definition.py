@@ -1,6 +1,6 @@
 from .utils import Call, Chat
 from ..utils import Role
-from ...errors.strategys import StrategySectionMissingError, StrategyParameterMissingError
+from ...errors.components.strategys import StrategySectionMissingError, StrategyParameterMissingError
 from warnings import warn
 from pathlib import Path
 import tomllib

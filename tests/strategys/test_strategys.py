@@ -2,7 +2,7 @@ import pytest
 from llyra.components import Strategy
 from llyra.components.strategys.utils import Call, Chat
 from llyra.components.utils import Role
-from llyra.errors.strategys import StrategySectionMissingError, StrategyParameterMissingError
+from llyra.errors.components.strategys import StrategySectionMissingError, StrategyParameterMissingError
 from pathlib import Path
 from re import escape
 

@@ -1,6 +1,6 @@
 from .basic import Config
 from .utils import Server, struct_path, struct_url
-from ...errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from ...errors.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
 from pathlib import Path
 
 class RemoteConfig(Config):

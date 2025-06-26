@@ -1,7 +1,7 @@
 import pytest
 from llyra.components import RemoteConfig
 from llyra.components.configs.utils import Server
-from llyra.errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from llyra.errors.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
 
 
 @pytest.fixture

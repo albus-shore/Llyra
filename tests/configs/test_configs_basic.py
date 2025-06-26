@@ -1,6 +1,6 @@
 import pytest
 from llyra.components.configs.basic import Config
-from llyra.errors.configs import ConfigParameterMissingError, ConfigSectionMissingError
+from llyra.errors.components.configs import ConfigParameterMissingError, ConfigSectionMissingError
 from pathlib import Path
 
 @pytest.fixture

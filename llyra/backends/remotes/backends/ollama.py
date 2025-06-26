@@ -1,6 +1,6 @@
 import requests
 from .utils import convert_str2list
-from ....errors.remotes import RemoteServerConnectionError, RemoteServiceNotCompatibleError, RemoteModelNotAvailableError, RemoteServiceError
+from ....errors.backends.remotes import RemoteServerConnectionError, RemoteServiceNotCompatibleError, RemoteModelNotAvailableError, RemoteServiceError
 
 class Ollama:
     '''The class is defined for abstract basic methods 

@@ -1,3 +1,2 @@
-from .configs import ConfigError
-from .strategys import StrategyError
-from .remotes import RemoteError
+from .components import ConfigError, StrategyError
+from .backends import RemoteError

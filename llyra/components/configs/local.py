@@ -1,6 +1,6 @@
 from .basic import Config
 from .utils import Model, struct_model_name, struct_path, struct_suffix
-from ...errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from ...errors.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
 from warnings import warn
 from pathlib import Path
 

@@ -1,6 +1,6 @@
 import tomllib
 from pathlib import Path
-from ...errors.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from ...errors.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
 
 class Config:
     '''The class is defined to define basic attributes and internal methods, 
