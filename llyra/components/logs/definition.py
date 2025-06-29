@@ -153,14 +153,13 @@ class Log:
                                                   branch=self.branch)
 
 ## ============================== Record Read Method ============================== ##
-    def get(self,section:int,branch:int) -> dict | list:
+    def get(self,section:int,branch:int) -> dict:
         '''The method is defined to read log records in reasonable way.
         Args:
             section: A integer indicate specific section record.
             branch: A integer indicate specific branch record in specific section.
         Returns:
-            A dictionary indicate the specific section record.
-            Or a list of each section record's dictionary. 
+            A dictionary indicate the specific section record. 
         '''
         if section >= 0 and branch >= 0:
             # Get Table instance
