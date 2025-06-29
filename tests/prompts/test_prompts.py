@@ -1,6 +1,6 @@
 import pytest
 from llyra.components import Prompt
-from llyra.components.utils import Role
+from llyra.components.utils import Role, Iteration
 
 @pytest.fixture
 def prompt():
@@ -28,8 +28,7 @@ def test_iterate_method(prompt):
     # Execute iteration record
     prompt.iterate(role,
                    'Hello, there!',
-                   'Greeting, how can I assistant you today?',
-                   True)
+                   'Greeting, how can I assistant you today?')
     # Validate record value
     assert prompt._iteration == [
         {'role': 'user', 'content': 'Hello, there!'},
@@ -47,37 +46,13 @@ def test_iterate_method_keeping_recording(prompt):
     # Execute iteration record
     prompt.iterate(role,
                    'Hello, there!',
-                   'Greeting, how can I assistant you today?',
-                   True)
+                   'Greeting, how can I assistant you today?')
     # Validate record value
     assert prompt._iteration == [
         {'role': 'user', 'content': 'Dummy former record.'},
         {'role': 'user', 'content': 'Hello, there!'},
         {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
         ]
-    
-def test_iterate_method_starting_new_record(prompt):
-    '''Test whether the method can make new iteration record properly.'''
-    role = Role('system','user','assistant')
-    # Set former executive value
-    prompt._iteration.append({'role': 'user', 'content': 'Hello, there!'})
-    # Execute iteration record
-    prompt.iterate(role,
-                   'Introduce yourself.',
-                   'Greeting, how can I assistant you today?',
-                   False)
-    # Validate record value
-    assert prompt._iteration == [
-        {'role': 'user', 'content': 'Introduce yourself.'},
-        {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'}
-        ]
-
-def test_iterate_method_ignoring_invalid_record(prompt):
-    '''Test whether the method can ignore invalid iteration record properly.'''
-    # Execute iteration record
-    prompt.iterate(None,'This is for test.','Dummy Record',True)
-    # Validate record value
-    assert prompt._iteration == []
 
 def test_iterate_method_ignoring_not_recording_record(prompt):
     '''
@@ -86,15 +61,50 @@ def test_iterate_method_ignoring_not_recording_record(prompt):
     '''
     role = Role('system','user','assistant')
     # Execute iteration record
-    prompt.iterate(role,None,'Dummy Record',True)
+    prompt.iterate(role,None,'Dummy Record')
     # Validate record value
     assert prompt._iteration == [{'role': 'assistant', 'content': 'Dummy Record'}]
     # Clear former iteration
     prompt._iteration = []
     # Execute iteration record
-    prompt.iterate(role,'Dummy Record',None,True)
+    prompt.iterate(role,'Dummy Record',None)
     # Validate record value
     assert prompt._iteration == [{'role': 'user', 'content': 'Dummy Record'}]
+
+## ============================ `reload()` Method Test ============================ ##
+def test_reload_method(iterated_prompt):
+    '''Test whether the method can reload extra iteration history properly.'''
+    extra_history = [Iteration(query='Dummy former query.',
+                               response='Dummy former response.')]
+    role = Role('system','user','assistant')
+    # Execute reload record
+    iterated_prompt.reload(role,extra_history)
+    # Validate record value
+    assert iterated_prompt._iteration == [
+        {'role': 'user', 'content': 'Dummy former query.'},
+        {'role': 'assistant', 'content': 'Dummy former response.'}]
+    
+def test_reload_method_without_iteration_history(prompt):
+    '''Test whether the method can reload extra iteration history properly 
+    when iteration history attribute is empty.'''
+    extra_history = [Iteration(query='Dummy former query.',
+                               response='Dummy former response.')]
+    role = Role('system','user','assistant')
+    # Execute reload record
+    prompt.reload(role,extra_history)
+    # Validate record value
+    assert prompt._iteration == [
+        {'role': 'user', 'content': 'Dummy former query.'},
+        {'role': 'assistant', 'content': 'Dummy former response.'}]
+
+def test_reload_method_clear_iteration_history(iterated_prompt):
+    '''Test whether the method can clear iteration history properly 
+    when extra iteration history is empty.'''
+    role = Role('system','user','assistant')
+    # Execute reload record
+    iterated_prompt.reload(role,[])
+    # Validate record value
+    assert iterated_prompt._iteration == []
 
 ## ============================= `call()` Method Test ============================= ##
 def test_call_method(prompt):
@@ -114,7 +124,6 @@ def test_call_method_with_iteration(iterated_prompt):
         {'role': 'user', 'content': 'Hello, there!'},
         {'role': 'assistant', 'content': 'Greeting, how can I assistant you today?'},
         ]
-
 
 ## ============================= `chat()` Method Test ============================= ##
 def test_chat_method_without_iteration_and_addition(prompt):

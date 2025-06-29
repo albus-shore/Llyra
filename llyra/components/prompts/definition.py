@@ -1,5 +1,5 @@
 from .utils import make_new_inference
-from ..utils import Role
+from ..utils import Role, Iteration
 
 class Prompt():
     '''The class is defined to define universal attributes and methods,
@@ -50,21 +50,14 @@ class Prompt():
         return iteration_prompt
     
     ## ======================== Additional Method for Chat ======================== ##
-    def iterate(self,role:Role,input:str,output:str,keep:bool) -> None:
+    def iterate(self,role:Role,input:str,output:str) -> None:
         '''The method is defined for update chat iteration history record.
         Args:
             role: A dataclass indicate the input and output role of 
                 the iteration record.
             input: A string indicate the input content of the iteration record.
             output: A string indicate the output content of the iteration record.
-            keep: A boolean indicate whether continue last chat iterarion.
         '''
-        # Discriminate whether continue last chat iteration
-        if not keep:
-            self._iteration = []
-        # Discriminate whether make new iteration records
-        if role == None:
-            return
         # Append input record to iteration record attribute
         if input:
             input_record = make_new_inference(role.input,input)
@@ -72,4 +65,22 @@ class Prompt():
         # Append output record to iteration record attribute
         if output:
             output_record = make_new_inference(role.output,output)
+            self._iteration.append(output_record)
+
+    def reload(self,role:Role,iterations:list[Iteration]) -> None:
+        '''The method is defined for reload extra iteration history 
+        to chat iteration history record which will be overrided.
+        Args:
+            role: A dataclass indicate the input and output role of 
+                the iteration record.
+            iterations: A list of Iteration dataclass instances 
+                indicate extra iteration history.
+        '''
+        # Clear iteration record attribute
+        self._iteration = []
+        # Append extra iteration history
+        for iteration in iterations:
+            input_record = make_new_inference(role.input,iteration.query)
+            output_record = make_new_inference(role.output,iteration.response)
+            self._iteration.append(input_record)
             self._iteration.append(output_record)
