@@ -1,4 +1,4 @@
-from .classes import Iteration
+from ...utils import Iteration
 from copy import deepcopy
 import json
 

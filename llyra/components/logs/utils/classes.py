@@ -1,17 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from dataclasses import dataclass
 from time import time
-
-## =========================== Data Class `Iteration()` =========================== ##
-@dataclass
-class Iteration:
-    '''The class is defined for managing iteration record in branch record.
-    Args:
-        query: A string indicate input content for model inference.
-        response: A string indicate response of model inference.
-    '''
-    query: str
-    response: str
     
 ## ============================ Table Class `Branch()` ============================ ##
 class Branch(SQLModel, table=True):

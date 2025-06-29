@@ -1,8 +1,8 @@
-from .utils import Section, Branch, Iteration
+from .utils import Section, Branch
 from .utils import convert_dataclass2json, convert_dataclasses2jsonlist, convert_jsonlist2dataclasses
 from .utils import get_section, get_branch, get_latest_section_id, get_latest_branch_id
 from .utils import update_record
-from ..utils import Role
+from ..utils import Role, Iteration
 from ...errors.components.logs import LogSectionNotCreatedError, LogBranchNotCreatedError
 from ...errors.components.logs import LogSectionNotSetError, LogBranchNotSetError
 from ...errors.components.logs import LogInferenceModeError

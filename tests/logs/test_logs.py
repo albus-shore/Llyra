@@ -1,11 +1,11 @@
 import pytest
 from llyra.components import Log
-from llyra.components.logs.utils import Section, Branch, Iteration
+from llyra.components.logs.utils import Section, Branch
 from llyra.components.logs.utils import convert_dataclasses2jsonlist, convert_dataclass2json
 from llyra.errors.components.logs import LogBranchNotCreatedError, LogBranchNotSetError
 from llyra.errors.components.logs import LogSectionNotCreatedError, LogSectionNotSetError
 from llyra.errors.components.logs import LogInferenceModeError
-from llyra.components.utils import Role
+from llyra.components.utils import Role, Iteration
 from sqlmodel import SQLModel, Session, create_engine, select
 
 @pytest.fixture
