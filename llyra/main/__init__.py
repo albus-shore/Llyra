@@ -1,1 +1,1 @@
-from .defination import Llyra
+from .definition import Llyra

@@ -1,1 +1,1 @@
-from .defination import Log
+from .definition import Log

@@ -1,1 +1,1 @@
-from .defination import Strategy
+from .definition import Strategy

@@ -1,1 +1,1 @@
-from .defination import Local
+from .definition import Local
