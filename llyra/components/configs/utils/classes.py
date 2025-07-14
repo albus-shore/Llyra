@@ -21,7 +21,7 @@ class Server:
     The class is defined for managing parameters of server section in remote section.
     Args:
         url: A string indicate the base url of remote inference server.
-        port: A integrate indicate the service port of remote inference server.
+        port: A integer indicate the service port of remote inference server.
         endpoint: A string indicate the endpoint before specific service interface.
     '''
     url: str

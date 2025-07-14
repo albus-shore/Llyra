@@ -4,7 +4,7 @@ def set_gpu(gpu:bool) -> int:
     Args:
         gpu: A boolean indicate whether using GPU for inference acceleration.
     Returns:
-        layer: A integrate indicate number of layers offload to GPU.
+        layer: A integer indicate number of layers offload to GPU.
     '''
     if gpu:
         layer = int(-1)
