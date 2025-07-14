@@ -1,280 +1,108 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/albus-shore/Llyra/main/assets/logo.png" width="300" alt="Llyra Logo"/>
-</p>
-
-<h1 align="center">Llyra</h1>
-
-<p align="center">
-  <em>Lightweight LLaMA Reasoning Assistant</em>
-</p>
+# 🧪Section & Branch Control Functions with First Version of Structure
+> _🚨 Archived Experience Branch. Do not attempt to merge. 🚨_
 
 ---
 
-## ✨ Features
+## 💡Idea
 
-- **Hybrid Backend Support**  
-  Use local `llama-cpp-python` or connect to a remote Ollama endpoint via the same interface.  
+**Build Section & Branch Control Functions under the first version structure of `Llyra`.**
 
-- **Minimal, Configurable Inference**  
-  Load prompts, model parameters, and tools from external files.
+## 🎯Goals
 
-- **Prompt Engineering Friendly**  
-  Easily manage system prompts, roles, and chat formats through external `.txt` files.
+### 🔗 `change_section()` method
+- `id` argument for choice of the section content
+    - Set `id` to a **positive** value to recall the specific section content
+        > It will raise **IndexError** when `id` value out of range
+    - Set `id` to a **negative** value to create a new section  
 
-- **Optional RAG Integration (Coming Soon)**  
-  Native support for Weaviate-based retrieval-augmented generation.
+> The section id starts from **0**.
 
-- **Tool Support (Planned)**  
-  Enable LLMs to use JSON-defined tools (function-calling style) with one argument.
+### 🖇️ `change_section()` method
+- `id` argument for choice of the branch content in current section
+    - Set `id` to a **positive** value to recall the specific branch content in current section
+        > It will raise **IndexError** when `id` value out of range
+    - Set `id` to a **negative** value to create a new branch in current section
+    
+> The branch id starts from **0**.  
 
 ---
 
-## ⚙️ Dependencies
+## 📌Additional Changes
+- Swift **log record** from runtime python list of dataclass instances to temporary `SQLite` database
+- Refactor `chat()` methods  classes by removing `keep` argument 
+- Refactor `get_log()` method by adding `section` and `branch` arguments and removing `id` argument
+   > Only support to get specific branch log record of specific section, raise **ValueError()** when passing negative value to args.
+- Refactor `Prompt()` class by removing `keep` argument of `iterate()` method and adding `reload()` method
+- Refactor `Local()` class by removing `keep` argument of `chat()` method and rewrite components initialization methods
+- Refactor `Remote()` class by removing `keep` argument of `chat()` method and rewrite components initialization methods 
+- Add new parameter `url` of `global` section in config file to support outside SQL database for log recording
+- Re-struct sub-package `errors`
+- Add `LogError()`, `LogSectionNotCreatedError(LogError)`, `LogBranchNotCreatedError(LogError)`, `LogSectionNotSetError(LogError)`, `LogBranchNotSetError(LogError)`, `LogInferenceModeError(LogError)`, `LogbaseOperationFailedError(LogError)` for more clear log operation error management
 
-Llyra does **not** bundle any backend inference engines. You must install them manually according to your needs:
+---
 
-**Required (choose one):**
-- For local models: 
-  [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
-- For remote inference: 
-  **any Ollama-compatible API**
+## 📉Why Archived
 
-## 📦 Installation
+- The first version structure of `Llyra` can't fit the requirements of building advanced functions.
+- Future version of `Llyra` will swift to more advanced and flexible structure for requirements of building advanced functions.
+- Some codes within this branch may be Reusable for further development.
+
+---
+
+## ✅Fulfilled Refactors
+
+- [ ] `change_section()` method
+- [ ] `change_branch()` method
+- [ ] `chat()` method
+- [ ] `get_log()` method
+- [x] `Prompt()` class
+- [ ] `Local()` class
+- [ ] `Remote()` class
+- [x] log record switch to `SQLite` database
+- [ ] add `url` parameter of `global` section in config file
+- [x] `LogError()` series error
+
+---
+
+## 🌪️Influent Files
 
 ```bash
-pip install llyra
+llyra
+    /--> components
+        /--> configs
+            /--> basic.py
+            /--> local.py
+            /--> remote.py
+        /--> strategys
+            /--> definition.py
+        /--> prompts
+            /--> definition.py
+        /--> logs
+            /--> utils
+                /--> classes.py
+                /--> funcs.py
+                /--> operations.py
+                /--> __init__.py
+            /--> definition.py
+        /--> utils
+            /--> __init__.py
+            /--> iterations.py
+    /--> main
+        /--> definition.py
+    /--> backends
+        /--> remotes
+            /--> backends
+                /--> ollama.py
+    /--> errors
+        /--> __init__.py
+        /--> components
+            /--> __init__.py
+            /--> configs.py
+            /--> strategys.py
+            /--> logs.py
+        /--> backends
+            /--> __init__.py
+            /--> remotes.py
 ```
 
 ---
-
-## 🚀 Quickstart
-
-1. Make directary `configs/` in your project root.
-2. Add `config.toml` and `stategy.toml` to `configs/` directory.
-4. Make your first iterative chat inference with follwing example:
-  ```python
-  from llyra import Llyra
-
-  model = Llyra(mode='local')
-
-  response = model.chat('Evening!',keep=True)
-
-  print(response)
-  ```
-
----
-
-## 🧩 Function APIs
-
-### Initialize Instance
-
-**A simple unified interface provides through the `Llyra` class.**
-
-  - `mode` argument is **necessary** to decide inference locally or remotely when initialize instance.
-    > It's the only chance you can choose the backend, bachend **can't** be changed in runtime.
-
-  - `path` argument is **optional** to override default path to config file when initialize instance.
-    > The default path is `./configs/config.toml`.
-    > Be noticed that `toml` is the only valid config file format.
-
-Here provide simple demo showing how to initialize `Llyra` instance:
-
-#### Inference Locally
-```python
-from llyra import Llyra
-
-model = Llyra(mode='local')
-
-```
-
-#### Inference Remotely
-```python
-from llyra import Llyra
-
-model = Llyra(mode='remote')
-
-```
-
-### Execute Inference
-
-**`Llyra` provides two method to execute single call inference and iterative chat inference.**
-
-#### `call()` method
-
-`call()` method provides a simple interface to execute **single call inference**.
-
-  - `input` argument will take a **string** as the **prompt content** for model inference.
-
-  > It will return a **string** as the response of model inference.
-
-Here provide a simple demo showing how to execute single call inference:
-
-```python
-
-response = model.call('Evening!')
-
-print(response)
-
-```
-
-#### `chat()` method
-
-`chat()` method provides a simple interface to execute **iterative chat inference**.
-
-  - `message` argument will take a **string** as the **current input content** for model inference.
-  - `keep` argument will take a **boolean** as the choice of whether keeping current section's content.
-    - Set `keep` to **True** to keep the current section's content.
-    - Set `keep` to **False** to start a new section from this call.
-    > Yes, you don't need to handle the content, `Llyra` can do that.
-  
-  > It will return a **string** as the response of the inference's model reply.
-
-Here provide a simple demo showing how to execute iterative chat inference:
-
-```python
-
-response = model.chat('Evening!',True)
-
-print(response)
-
-```
-
-### Get log
-
-`Llyra` record inference log internally with a **custome format** which isn't read-friendly for user.
-
-**To get readable log record, please using `get_log()` method.**
-
-`get_log()` method provides a simple interface to extract log record and convert it into readable format without affecting internal log records.
-
-  - `id` argument will take a **integer** as the index of log record.
-    - Set `id` to a **positive** value to get specific log record.
-      > It will raise `IndexError` when `id` value out of range.
-    - Set `id` to a **negative** value to get all log records.
-
-    > It will return a **dictionary** when getting a specific log record, and a **list** of dictionaries when getting all log records.
-
-  > `Llyra` starts its log's id from **0**.
-
-Here provide a simple demo showing how to get a specific log record in readable format:
-
-```python
-
-log = model.get_log(1)
-
-print(log)
-
-```
-
-And, the individual log record should be looked like as:
-
-```python
-{
-  'id': 1,
-  'type': 'call',
-  'model': 'llama-2',
-  'addition': 'You are a kind assistant.',
-  'role': {
-    'prompt': 'system',
-    'input': 'user',
-    'output': 'assistant'
-    },
-  'iteration': [
-    {'query': 'Evening!','response': 'Evening, how can I help you today?'}
-    ],
-  'temperature': 0.6,
-  'create_at': 1750742992.32208
-  }
-```
-
----
-
-## 🛠 Configuration Example
-
-### config.toml
-
-```toml
-[global]
-strategy = "configs/strategy.toml"
-
-[local]
-format = "llama-2"
-gpu = true
-ram = false
-
-[local.model]
-name = "Distill-Llama-8B"
-directory = "models/"
-suffix = ".gguf"
-
-
-[remote]
-model = "llama-2"
-
-[remote.server]
-url = "http://localhost"
-port = 11434
-endpoint = "api/"
-```
-
-### strategy.toml
-
-```toml
-[call]
-stop = "<EOF>"
-temperature = 0.6
-
-[chat]
-prompt = "prompts/prompt.txt"
-stop = "<EOF>"
-temperature = 0.6
-
-[chat.role]
-prompt = "system"
-input = "user"
-output = "assistant"
-```
-
----
-
-## 🧭 Roadmap
-
-| Phase | Feature                                  | Status      |
-|-------|------------------------------------------|-------------|
-| 1     | Minimal `llama-cpp-python` local chat    | ✅ Finished  |
-| 2     | Predefined prompts via `.txt` / `.json`  | ✅ Finished  |
-| 3     | Ollama remote API support                | ✅ Finished  |
-| 4     | Section & Branch control.                | ⏳ Planned   |
-| 5     | Weaviate RAG support                     | ⏳ Planned   |
-| 6     | Tool/function-calling via JSON           | ⏳ Planned   |
-
----
-
-## 🪪 License
-
-This project is licensed under the **MIT License**.
-
----
-
-## 📚 Attribution
-
-Currently, this package is built on top of the following open-source libraries:
-
-- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) — licensed under the MIT License  
-  Python bindings for llama.cpp
-
-This package does **not include or redistribute** any third-party source code.  
-All dependencies are installed via standard Python packaging tools (e.g. `pip`).
-
-We gratefully acknowledge the authors and maintainers of these libraries for their excellent work.
-
----
-
-## 🌐 About the Name
-
-**Llyra** is inspired by the constellation **Lyra**, often associated with harmony and simplicity.  
-In the same way, this package aims to bring harmony between developers and language models.
-
----
-
-> _Designed with care. Built for clarity._
