@@ -1,1 +1,1 @@
-from .defination import Prompt
+from .definition import Prompt

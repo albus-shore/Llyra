@@ -7,9 +7,9 @@ from ...utils import Role
 ## ============================= Dataclass `Section()` ============================= ##
 @dataclass
 class Section:
-    '''The class is defined for making chat history record.
+    '''The class is defined for making history record.
     Args:
-        id: A integrate indicate the identity of current chat log.
+        id: A integer indicate the identity of current log record.
         model: A string indicate the name of model file.
         addition: A string indicate the content of additional prompt.
         role: A dataclass indicate input, output, and prompt role of

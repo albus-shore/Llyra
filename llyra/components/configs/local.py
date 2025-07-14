@@ -27,13 +27,13 @@ class LocalConfig(Config):
         '''
         # Load config file
         super()._load(path)
-        # Extra all local config parameters
+        # Extract all local config parameters
         try:
             content:dict = self._content['local']
         except KeyError:
             raise ConfigSectionMissingError('local')
         # Read model config parameters
-        ## Extra all model config parameters
+        ## Extract all model config parameters
         try:
             model = content['model']
         except KeyError:
