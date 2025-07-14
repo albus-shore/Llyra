@@ -24,13 +24,13 @@ class RemoteConfig(Config):
         '''
         # Load config file
         super()._load(path)        
-        # Extra all remote parameters
+        # Extract all remote parameters
         try:
             content:dict = self._content['remote']
         except KeyError:
             raise ConfigSectionMissingError('remote')
         # Read server config parameters
-        ## Extra all server config parameters
+        ## Extract all server config parameters
         try:
             server = content['server']
         except KeyError:
