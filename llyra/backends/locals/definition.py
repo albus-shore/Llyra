@@ -1,35 +1,42 @@
 from llama_cpp import Llama
 from ...components import LocalConfig, Strategy, Prompt, Log
 from .utils import set_gpu
-from pathlib import Path
 
 class Local:
     '''The class is defined for fulfill local LLM call.'''
     ## ============================= Initialize Method ============================= ##
-    def __init__(self,path:str|Path) -> None:
+    def __init__(self,config:LocalConfig,
+                 strategy:Strategy,
+                 prompt:Prompt,
+                 log:Log) -> None:
         '''The method is defined for initialize Local class object.
         Args:
-            path: A string or Path instance indicate the path to the config file.
+            config: A LocalConfig class instance indicate the config status.
+            strategy: A Strategy class instance indicate the strategy status.
+            prompt: A Prompt class instance for inference prompt operation.
+            log: A log class instance for log record operation.
         '''
         # Initialize component attributes
-        self.config = LocalConfig()
-        self.strategy = Strategy()
-        self.prompt = Prompt()
-        self.log = Log()
-        # Load local config
-        self.config.load(path)
-        # Load inference strategy
-        self.strategy.load(self.config.strategy)
-        # Initialize backend attribute
-        self.backend = Llama(model_path=self.config.path,
-                             n_gpu_layers=set_gpu(self.config.gpu),
-                             chat_format=self.config.format,
-                             use_mlock=self.config.ram,
-                             n_ctx=0,
-                             verbose=False)
+        self._config = config
+        self._strategy = strategy
+        self._prompt = prompt
+        self._log = log
+        # Define backend attribute
+        self._backend = None
         # Define I/O attributes
         self.query: str
         self.response: str
+
+    ## ================================ Load Method ================================ ##
+    def load(self) -> None:
+        '''The method is defined for load inference instance for inference.'''
+        # Load backend attribute
+        self._backend = Llama(model_path=self._config.path,
+                             n_gpu_layers=set_gpu(self._config.gpu),
+                             chat_format=self._config.format,
+                             use_mlock=self._config.ram,
+                             n_ctx=0,
+                             verbose=False)
 
     ## ============================= Inference Methods ============================= ##
     def call(self,message:str) -> str:
@@ -42,17 +49,17 @@ class Local:
         # Get input content
         self.query = message
         # Make prompt for inference
-        prompt = self.prompt.call(self.query)
+        prompt = self._prompt.call(self.query)
         # Execute model inference
-        response = self.backend.create_completion(prompt=prompt,
-            stop=self.strategy.call.stop,
-            temperature=self.strategy.call.temperature)
+        response = self._backend.create_completion(prompt=prompt,
+            stop=self._strategy.call.stop,
+            temperature=self._strategy.call.temperature)
         # Extract response content
         self.response = response['choices'][0]['text']
         # Make log record
-        self.log.call(model=self.config.model.name,
+        self._log.call(model=self._config.model.name,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.call.temperature)
+                      temperature=self._strategy.call.temperature)
         # Return model response
         return self.response
     
@@ -67,27 +74,27 @@ class Local:
         # Get input content
         self.query = message
         # Discriminate whether keep current section content
-        self.prompt.iterate(None,None,None,keep)
+        self._prompt.iterate(None,None,None,keep)
         # Make prompt for inference
-        prompt = self.prompt.chat(role=self.strategy.chat.role,
+        prompt = self._prompt.chat(role=self._strategy.chat.role,
                                   content=self.query,
-                                  addition=self.strategy.chat.addition)
+                                  addition=self._strategy.chat.addition)
         # Execute model inference
-        response = self.backend.create_chat_completion(messages=prompt,
-            stop=self.strategy.chat.stop,
-            temperature=self.strategy.chat.temperature)
+        response = self._backend.create_chat_completion(messages=prompt,
+            stop=self._strategy.chat.stop,
+            temperature=self._strategy.chat.temperature)
         # Extract response content
         self.response = response['choices'][0]['message']['content']
         # Update prompt section content
-        self.prompt.iterate(role=self.strategy.chat.role,
+        self._prompt.iterate(role=self._strategy.chat.role,
                             input=self.query,output=self.response,
                             keep=True)
         # Make log record
-        self.log.chat(model=self.config.model.name,
-                      addition=self.strategy.chat.addition,
-                      role=self.strategy.chat.role,
+        self._log.chat(model=self._config.model.name,
+                      addition=self._strategy.chat.addition,
+                      role=self._strategy.chat.role,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.chat.temperature,
+                      temperature=self._strategy.chat.temperature,
                       keep=keep)
         # Return model reponse
         return self.response
