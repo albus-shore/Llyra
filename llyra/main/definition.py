@@ -1,3 +1,4 @@
+from ..components import LocalConfig, RemoteConfig, Strategy, Prompt, Log
 from ..backends import Local, Remote
 from typing import Literal
 from pathlib import Path
@@ -11,11 +12,29 @@ class Llyra:
             mode: A choice indicate the mode of Llyra.
             path: A string or Path instance indicate the path to the config file.
         '''
-        # Initialize backend attribute
-        if mode == 'local':
-            self._backend = Local(path)
-        elif mode == 'remote':
-            self._backend = Remote(path)
+        # Initialize universal attributes
+        self._strategy = Strategy()
+        self._prompt = Prompt()
+        self._log = Log()
+        # Initialize seperated attributes
+        match mode:
+            case 'local':
+                self._config = LocalConfig()
+                self._backend = Local(config=self._config,
+                                      strategy=self._strategy,
+                                      prompt=self._prompt,
+                                      log=self._log)
+            case 'remote':
+                self._config = RemoteConfig()
+                self._backend = Remote(config=self._config,
+                                       strategy=self._strategy,
+                                       prompt=self._prompt,
+                                       log=self._log)
+        # Load components
+        self._config.load(path=path)
+        self._strategy.load(self._config.strategy)
+        # Load backend
+        self._backend.load()
     
     ## ============================= Inference Methods ============================= ##
     def call(self,input:str) -> str:
@@ -46,7 +65,7 @@ class Llyra:
                 indicate where the model should stop generation.
             temperature: A float indicate the model inference temperature.
         '''
-        self._backend.strategy.update_call(stop,temperature)
+        self._strategy.update_call(stop,temperature)
 
     def update_chat(self,addition:str=None,
             prompt_role:str=None,input_role:str=None,output_role:str=None,
@@ -62,7 +81,7 @@ class Llyra:
                 indicate where the model should stop generation.
             temperature: A float indicate the model inference temperature.
         '''
-        self._backend.strategy.update_chat(addition,
+        self._strategy.update_chat(addition,
             prompt_role,input_role,output_role,
             stop,temperature)
         
@@ -76,7 +95,7 @@ class Llyra:
             ram: A boolean indicate whether keeping the model loaded in memory.
         '''
         try:
-            self._backend.config.update(format,gpu,ram)
+            self._config.update(format,gpu,ram)
         except AttributeError:
             error = '`update_config()` only available with backend `local`.'
             raise AttributeError(error)
@@ -92,4 +111,4 @@ class Llyra:
             A dictionary indicate the specific log records.
             Or a list of each log record's dictionary. 
         '''
-        return self._backend.log.get(id)   
+        return self._log.get(id)   
