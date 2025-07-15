@@ -5,26 +5,35 @@ from pathlib import Path
 class Remote:
     '''The class is defined for fulfill remote LLM call.'''
     ## ============================= Initialize Method ============================= ##
-    def __init__(self,path:str|Path) -> None:
+    def __init__(self,config:RemoteConfig,
+                 strategy:Strategy,
+                 prompt:Prompt,
+                 log:Log) -> None:
         '''The method is defined for initialize Remote class object.
         Args:
-            path: A string or Path instance indicate the path to the config file.
+        Args:
+            config: A RemoteConfig class instance indicate the config status.
+            strategy: A Strategy class instance indicate the strategy status.
+            prompt: A Prompt class instance for inference prompt operation.
+            log: A log class instance for log record operation.
         '''
         # Initialize component attributes
-        self.config = RemoteConfig()
-        self.strategy = Strategy()
-        self.prompt = Prompt()
-        self.log = Log()
-        # Load remote config
-        self.config.load(path)
-        # Load inference strategy
-        self.strategy.load(self.config.strategy)
-        # Initialize backend attribute
-        self.backend = Ollama(url=self.config.url,
-                              model=self.config.model)
+        self._config = config
+        self._strategy = strategy
+        self._prompt = prompt
+        self._log = log
+        # Define backend attribute
+        self._backend = None
         # Define I/O attributes
         self.query: str
         self.response: str
+
+    ## ================================ Load Method ================================ ##
+    def load(self) -> None:
+        '''The method is defined for load inference instance for inference.'''
+        # Load backend attribute
+        self._backend = Ollama(url=self._config.url,
+                              model=self._config.model)
 
     ## ============================= Inference Methods ============================= ##
     def call(self,message:str) -> str:
@@ -37,15 +46,15 @@ class Remote:
         # Get input content
         self.query = message
         # Make prompt for inference
-        prompt = self.prompt.call(self.query)
+        prompt = self._prompt.call(self.query)
         # Execute model inference
-        self.response = self.backend.call(prompt=prompt,
-                                          stop=self.strategy.call.stop,
-                                          temperature=self.strategy.call.temperature)
+        self.response = self._backend.call(prompt=prompt,
+                                          stop=self._strategy.call.stop,
+                                          temperature=self._strategy.call.temperature)
         # Make log record
-        self.log.call(model=self.config.model,
+        self._log.call(model=self._config.model,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.call.temperature)
+                      temperature=self._strategy.call.temperature)
         # Return model response
         return self.response
     
@@ -60,25 +69,25 @@ class Remote:
         # Get input content
         self.query = message
         # Discriminate whether keep current section content
-        self.prompt.iterate(None,None,None,keep)
+        self._prompt.iterate(None,None,None,keep)
         # Make prompt for inference
-        prompt = self.prompt.chat(role=self.strategy.chat.role,
+        prompt = self._prompt.chat(role=self._strategy.chat.role,
                                   content=self.query,
-                                  addition=self.strategy.chat.addition)
+                                  addition=self._strategy.chat.addition)
         # Execute model inference
-        self.response = self.backend.chat(prompt=prompt,
-                                          stop=self.strategy.chat.stop,
-                                          temperature=self.strategy.call.temperature)
+        self.response = self._backend.chat(prompt=prompt,
+                                          stop=self._strategy.chat.stop,
+                                          temperature=self._strategy.call.temperature)
         # Update prompt section content
-        self.prompt.iterate(role=self.strategy.chat.role,
+        self._prompt.iterate(role=self._strategy.chat.role,
                             input=self.query,output=self.response,
                             keep=True)
         # Make log record
-        self.log.chat(model=self.config.model,
-                      addition=self.strategy.chat.addition,
-                      role=self.strategy.chat.role,
+        self._log.chat(model=self._config.model,
+                      addition=self._strategy.chat.addition,
+                      role=self._strategy.chat.role,
                       input=self.query,output=self.response,
-                      temperature=self.strategy.chat.temperature,
+                      temperature=self._strategy.chat.temperature,
                       keep=keep)
         # Return model response
         return self.response
