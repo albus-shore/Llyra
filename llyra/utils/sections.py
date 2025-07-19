@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 from time import time
 
-@ dataclass
+@dataclass
 class Section:
     '''The class is defined for managing section records of inference.
     Args:
