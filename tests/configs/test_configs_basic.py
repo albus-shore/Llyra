@@ -43,7 +43,7 @@ def test_load_config_file_from_default_path(config):
                 'port': 11434,
                 'endpoint': 'api/',
                 },
-            'model': 'llama-2',
+            'model': 'llama3:latest',
             }
     }
 
