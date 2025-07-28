@@ -5,10 +5,10 @@ from warnings import warn
 from pathlib import Path
 
 class LocalConfig(Config):
-    '''The class is defined for work with configurations of local inference.'''
+    '''The class is defined to work with configurations of local inference.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
-        '''The method is defined for initialize LocalConfig class object.'''
+        '''The method is defined to initialize LocalConfig class object.'''
         # Initialize parent class
         super().__init__()
         # Define config attributes
@@ -20,8 +20,8 @@ class LocalConfig(Config):
         self.path:str = None
 
     ## ================================ Load Method ================================ ##
-    def load(self,path:str|Path) -> None:
-        '''The method is defined for load config file for local inference.
+    def load_toml(self,path:str|Path) -> None:
+        '''The method is defined to load config file for local inference.
         Args:
             path: A string or Path instance indicate the path to the config file.
         '''
@@ -84,11 +84,11 @@ class LocalConfig(Config):
         self.path = self.model.directory + self.model.name + self.model.suffix
 
     ## =============================== Update Method =============================== ##
-    def update(self,
-               format:str,
-               gpu:bool,
-               ram:bool,) -> None:
-        '''The method is defined for update config parameters with inputs.
+    def update_parameter(self,
+                         format:str,
+                         gpu:bool,
+                         ram:bool,) -> None:
+        '''The method is defined to update config parameters with inputs.
         Args:
             format: A sting indicate the format of chat inference's input.
             gpu: A boolean indicate whether using GPU for inference acceleration.

@@ -4,10 +4,10 @@ from ...exceptions.components.configs import ConfigSectionMissingError, ConfigPa
 from pathlib import Path
 
 class RemoteConfig(Config):
-    '''The class is defined for work with configurations of remote inference.'''
+    '''The class is defined to work with configurations of remote inference.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
-        '''The method is defined for initialize RemoteConfig class object.'''
+        '''The method is defined to initialize RemoteConfig class object.'''
         # Initialize parent class
         super().__init__()
         # Define config attributes
@@ -17,8 +17,8 @@ class RemoteConfig(Config):
         self.url:str = None
 
     ## ================================ Load Method ================================ ##
-    def load(self,path:str|Path) -> None:
-        '''The method is defined for load config file for local inference.
+    def load_toml(self,path:str|Path) -> None:
+        '''The method is defined to load config file for local inference.
         Args:
             path: A string or Path instance indicate the path to the config file.
         '''
@@ -64,6 +64,6 @@ class RemoteConfig(Config):
         self.url += '/' + self.server.endpoint
     
     ## =============================== Update Method =============================== ##
-    def update(self,) -> None:
-        '''The method is defined for update config parameters with inputs.'''
+    def update_parameter(self,) -> None:
+        '''The method is defined to update config parameters with inputs.'''
         pass

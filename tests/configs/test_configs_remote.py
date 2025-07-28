@@ -17,7 +17,7 @@ def test_initialize_method(config):
     assert config.url == None
 
 ## ============================= `load()` Method Test ============================= ##
-def test_load_method(config,tmp_path):
+def test_load_toml_method(config,tmp_path):
     '''Test whether method can load and read all config parameters properly.'''
     # Set test config file
     content = '''
@@ -33,13 +33,13 @@ def test_load_method(config,tmp_path):
     test_toml = tmp_path / 'test.toml'
     test_toml.write_text(content)
     # Execute config load
-    config.load(test_toml)
+    config.load_toml(test_toml)
     # Validate loaded value
     assert config.model == 'test-model'
     assert config.server == Server('http://localhost',11434,'test/')
     assert config.url == 'http://localhost:11434/test/'
 
-def test_load_method_with_server_url_fix(config,tmp_path):
+def test_load_toml_method_with_server_url_fix(config,tmp_path):
     '''Test whether method can auto fix invalid server base url parameter properly.'''
     # Set test config file
     content = '''
@@ -55,13 +55,13 @@ def test_load_method_with_server_url_fix(config,tmp_path):
     test_toml = tmp_path / 'test.toml'
     test_toml.write_text(content)
     # Execute config load
-    config.load(test_toml)
+    config.load_toml(test_toml)
     # Validate loaded value
     assert config.model == 'test-model'
     assert config.server == Server('http://localhost',11434,'test/')
     assert config.url == 'http://localhost:11434/test/'
 
-def test_load_method_with_server_endpoint_fix(config,tmp_path):
+def test_load_toml_method_with_server_endpoint_fix(config,tmp_path):
     '''Test whether method can auto fix invalid server endpoint parameter properly.'''
     # Set test config file
     content = '''
@@ -77,13 +77,13 @@ def test_load_method_with_server_endpoint_fix(config,tmp_path):
     test_toml = tmp_path / 'test.toml'
     test_toml.write_text(content)
     # Execute config load
-    config.load(test_toml)
+    config.load_toml(test_toml)
     # Validate loaded value
     assert config.model == 'test-model'
     assert config.server == Server('http://localhost',11434,'test/')
     assert config.url == 'http://localhost:11434/test/'
 
-def test_load_method_without_model_parameter(config,tmp_path):
+def test_load_toml_method_without_model_parameter(config,tmp_path):
     '''Test whether method raise exception properly
     without `model` parameter in `remote` section.'''
     # Set test config file
@@ -100,9 +100,9 @@ def test_load_method_without_model_parameter(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigParameterMissingError,
         match='Missing `model` parameter of `remote` section in `config.toml`.'):
-        config.load(test_toml)
+        config.load_toml(test_toml)
 
-def test_load_method_without_server_url_parameter(config,tmp_path):
+def test_load_toml_method_without_server_url_parameter(config,tmp_path):
     '''Test whether method raise exception properly
     without `url` parameter in `remote.server` section.'''
     # Set test config file
@@ -120,9 +120,9 @@ def test_load_method_without_server_url_parameter(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigParameterMissingError,
         match='Missing `url` parameter of `remote.server` section in `config.toml`.'):
-        config.load(test_toml)
+        config.load_toml(test_toml)
 
-def test_load_method_without_server_port_parameter(config,tmp_path):
+def test_load_toml_method_without_server_port_parameter(config,tmp_path):
     '''Test whether method raise exception properly
     without `port` parameter in `remote.server` section.'''
     # Set test config file
@@ -140,9 +140,9 @@ def test_load_method_without_server_port_parameter(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigParameterMissingError,
         match='Missing `port` parameter of `remote.server` section in `config.toml`.'):
-        config.load(test_toml)        
+        config.load_toml(test_toml)        
 
-def test_load_method_without_server_endpoint_parameter(config,tmp_path):
+def test_load_toml_method_without_server_endpoint_parameter(config,tmp_path):
     '''Test whether method raise exception properly
     without `endpoint` parameter in `remote.server` section.'''
     # Set test config file
@@ -160,9 +160,9 @@ def test_load_method_without_server_endpoint_parameter(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigParameterMissingError,
         match='Missing `endpoint` parameter of `remote.server` section in `config.toml`.'):
-        config.load(test_toml)
+        config.load_toml(test_toml)
 
-def test_load_method_without_server_section(config,tmp_path):
+def test_load_toml_method_without_server_section(config,tmp_path):
     '''Test whether method raise exception properly
     without `server` section in `remote` section.'''
     # Set test config file
@@ -177,9 +177,9 @@ def test_load_method_without_server_section(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigSectionMissingError,
         match='remote.server'):
-        config.load(test_toml)
+        config.load_toml(test_toml)
 
-def test_load_method_without_remote_section(config,tmp_path):
+def test_load_toml_method_without_remote_section(config,tmp_path):
     '''Test whether method raise exception properly
     without `remote` section.'''
     # Set test config file
@@ -192,4 +192,4 @@ def test_load_method_without_remote_section(config,tmp_path):
     # Execute config load
     with pytest.raises(ConfigSectionMissingError,
         match='remote'):
-        config.load(test_toml)                          
+        config.load_toml(test_toml)                          
