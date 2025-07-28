@@ -15,6 +15,7 @@ def loaded_config(tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -46,6 +47,7 @@ def test_load_toml_method(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -72,6 +74,7 @@ def test_load_toml_method_with_model_name_fix(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -95,6 +98,7 @@ def test_load_toml_method_with_model_directory_fix(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -118,6 +122,7 @@ def test_load_toml_method_with_model_suffix_fix(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -141,6 +146,7 @@ def test_load_toml_method_with_format_fallback(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     gpu = true
     ram = false
@@ -165,6 +171,7 @@ def test_load_toml_method_with_gpu_fallback(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     ram = false
@@ -189,6 +196,7 @@ def test_load_toml_method_with_ram_fallback(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -214,6 +222,7 @@ def test_load_toml_method_without_model_name_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -236,6 +245,7 @@ def test_load_toml_method_without_model_directory_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -258,6 +268,7 @@ def test_load_toml_method_without_model_suffix_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -280,6 +291,7 @@ def test_load_toml_method_without_model_section(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [local]
     format = "test-format"
     gpu = true
@@ -299,6 +311,7 @@ def test_load_toml_method_without_local_section(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     '''
     test_toml = tmp_path / 'test.toml'
     test_toml.write_text(content)

@@ -23,6 +23,7 @@ def test_load_toml_method(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -45,6 +46,7 @@ def test_load_toml_method_with_server_url_fix(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -67,6 +69,7 @@ def test_load_toml_method_with_server_endpoint_fix(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -90,6 +93,7 @@ def test_load_toml_method_without_model_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote.server]
     url = "http://localhost"
     port = 11434
@@ -109,6 +113,7 @@ def test_load_toml_method_without_server_url_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -129,6 +134,7 @@ def test_load_toml_method_without_server_port_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -149,6 +155,7 @@ def test_load_toml_method_without_server_endpoint_parameter(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     [remote.server]
@@ -169,6 +176,7 @@ def test_load_toml_method_without_server_section(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     [remote]
     model = "test-model"
     '''
@@ -186,6 +194,7 @@ def test_load_toml_method_without_remote_section(config,tmp_path):
     content = '''
     [global]
     strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
     '''
     test_toml = tmp_path / 'test.toml'
     test_toml.write_text(content)
