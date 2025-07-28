@@ -1,5 +1,7 @@
 import tomllib
 from pathlib import Path
+from warnings import warn
+from sqlmodel import create_engine
 from ...exceptions.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
 
 class Config:
@@ -7,16 +9,17 @@ class Config:
         for working with configurations.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
-        '''The method is defined for initializing Config class object.'''
+        '''The method is defined to initializing Config class object.'''
         # Define global config attribute
         self.strategy:Path = None
+        self.logbase = create_engine('sqlite://')
         # Define assistant internal attribute
         self._path:Path = Path('configs/config.toml')
         self._content:dict = None
 
     ## =========================== Internal Load Method =========================== ##
     def _load(self,path:str|Path) -> dict:
-        '''The method is defined for load config from default or custom path.
+        '''The method is defined to load config from default or custom path.
         Args:
             path: A string or Path instance 
                 indicate the custom path to the config file.
@@ -37,14 +40,24 @@ class Config:
             else:
                 error = 'Missing config file.'
             raise FileNotFoundError(error)
-        # Read global config attribute
+        # Extract all global config parameters
         try:
             content = self._content['global']
         except KeyError:
             raise ConfigSectionMissingError('global')
+        # Read strategy config parameter
         try:
             strategy = content['strategy']
         except KeyError:
             raise ConfigParameterMissingError('global','strategy')
         else:
             self.strategy:Path = Path(strategy)
+        # Read logbase config parameter
+        try:
+            logbase = content['logbase']
+        except KeyError:
+            message = 'Missing `logbase` parameter of `global` section in `config.toml`'
+            message += ' , auto-fallback to `sqlite://` for in-memory database.'
+            warn(message,RuntimeWarning)
+        else:
+            self.logbase = create_engine(url=logbase)
