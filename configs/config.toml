@@ -1,5 +1,6 @@
 [global]
 strategy = "configs/strategy.toml"
+logbase = "sqlite:///logbase.db"
 
 [local]
 format = "llama-2"
