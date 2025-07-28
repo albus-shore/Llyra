@@ -1,6 +1,7 @@
 from .basic import Config
 from .utils import Model, struct_model_name, struct_path, struct_suffix
 from ...exceptions.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from ...exceptions.components.configs import ConfigModelNotCompatibleError
 from warnings import warn
 from pathlib import Path
 
@@ -90,7 +91,7 @@ class LocalConfig(Config):
                          ram:bool,) -> None:
         '''The method is defined to update config parameters with inputs.
         Args:
-            format: A sting indicate the format of chat inference's input.
+            format: A string indicate the format of chat inference's input.
             gpu: A boolean indicate whether using GPU for inference acceleration.
             ram: A boolean indicate whether keeping the model loaded in memory.
         '''        
@@ -101,3 +102,14 @@ class LocalConfig(Config):
         if ram != None:
             self.ram = ram
     
+    ## ============================== Validate Method ============================== ##
+    def validate_model(self,model:str) -> None:
+        '''The method is defined to validate 
+        whether the claiming model is compatible with the current config.
+        Args:
+            model: A string indicate the name of claiming model for inference.
+        '''
+        try:
+            assert self.model.name == model
+        except AssertionError:
+            raise ConfigModelNotCompatibleError(config=self.model.name,claiming=model)

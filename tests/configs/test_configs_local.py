@@ -2,6 +2,7 @@ import pytest
 from llyra.components import LocalConfig
 from llyra.components.configs.utils import Model
 from llyra.exceptions.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from llyra.exceptions.components.configs import ConfigModelNotCompatibleError
 
 @pytest.fixture
 def config():
@@ -359,3 +360,15 @@ def test_update_parameter_ignoring_ram_parameters(loaded_config):
     assert loaded_config.format == None
     assert loaded_config.gpu == False
     assert loaded_config.ram == False        
+
+## ======================== `validate_model()` Method Test ======================== ##
+def test_validate_model_method(loaded_config):
+    '''Test whether method can validate claiming model properly.'''
+    loaded_config.validate_model('test-model')    
+
+def test_validate_model_method_with_incompatible_claiming_model(loaded_config):
+    '''Test whether method raise exception properly
+    when claiming model is not compatoble.'''
+    with pytest.raises(ConfigModelNotCompatibleError,
+        match='Config model `test-model` not compatible with model `test-model-change`.'):
+        loaded_config.validate_model('test-model-change')    

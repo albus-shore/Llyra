@@ -1,6 +1,7 @@
 from .basic import Config
 from .utils import Server, struct_path, struct_url
 from ...exceptions.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
+from ...exceptions.components.configs import ConfigModelNotCompatibleError
 from pathlib import Path
 
 class RemoteConfig(Config):
@@ -67,3 +68,15 @@ class RemoteConfig(Config):
     def update_parameter(self,) -> None:
         '''The method is defined to update config parameters with inputs.'''
         pass
+
+    ## ============================== Validate Method ============================== ##
+    def validate_model(self,model:str) -> None:
+        '''The method is defined to validate 
+        whether the claiming model is compatible with the current config.
+        Args:
+            model: A string indicate the name of claiming model for inference.
+        '''
+        try:
+            assert self.model == model
+        except AssertionError:
+            raise ConfigModelNotCompatibleError(config=self.model,claiming=model)

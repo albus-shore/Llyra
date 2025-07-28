@@ -2,12 +2,33 @@ import pytest
 from llyra.components import RemoteConfig
 from llyra.components.configs.utils import Server
 from llyra.exceptions.components.configs import ConfigSectionMissingError, ConfigParameterMissingError
-
+from llyra.exceptions.components.configs import ConfigModelNotCompatibleError
 
 @pytest.fixture
 def config():
     config = RemoteConfig()
     return config
+
+@pytest.fixture
+def loaded_config(tmp_path):
+    loaded_config = RemoteConfig()
+    # Set test config file
+    content = '''
+    [global]
+    strategy = "dummy_directory/dummy_strategy.toml"
+    logbase = "sqlite:///dummy_database.db"
+    [remote]
+    model = "test-model"
+    [remote.server]
+    url = "http://localhost"
+    port = 11434
+    endpoint = "test/"
+    '''
+    test_toml = tmp_path / 'test.toml'
+    test_toml.write_text(content)
+    # Execute config load
+    loaded_config.load_toml(test_toml)
+    return loaded_config
 
 ## =========================== `__init__()` Method Test =========================== ##
 def test_initialize_method(config):
@@ -202,3 +223,15 @@ def test_load_toml_method_without_remote_section(config,tmp_path):
     with pytest.raises(ConfigSectionMissingError,
         match='remote'):
         config.load_toml(test_toml)                          
+
+## ======================== `validate_model()` Method Test ======================== ##
+def test_validate_model_method(loaded_config):
+    '''Test whether method can validate claiming model properly.'''
+    loaded_config.validate_model('test-model')
+
+def test_validate_model_method_with_incompatible_claiming_model(loaded_config):
+    '''Test whether method raise exception properly
+    when claiming model is not compatoble.'''
+    with pytest.raises(ConfigModelNotCompatibleError,
+        match='Config model `test-model` not compatible with model `test-model-change`.'):
+        loaded_config.validate_model('test-model-change')
