@@ -9,7 +9,7 @@ class Config:
         for working with configurations.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
-        '''The method is defined to initializing Config class object.'''
+        '''The method is defined to initialize Config class object.'''
         # Define global config attribute
         self.strategy:Path = None
         self.logbase = create_engine('sqlite://')
