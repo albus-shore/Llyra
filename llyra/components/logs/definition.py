@@ -22,7 +22,7 @@ class Log:
         self._engine = None
 
     ## ================================ Load Method ================================ ##
-    def load(self,engine) -> None:
+    def load_engine(self,engine) -> None:
         '''The method is defined to load database engine for database operation.
         Args:
             engine: A Engine class instance indicate the database engine.
@@ -278,7 +278,7 @@ class Log:
             logbase.commit()
 
 ## ============================== Record Read Method ============================== ##
-    def get(self,section:int,branch:int) -> Record:
+    def get_record(self,section:int,branch:int) -> Record:
         '''The method is defined to get specific log record in runtime.
         Args:
             section: A integer indicate the section of the log record.

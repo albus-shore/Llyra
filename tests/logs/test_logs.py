@@ -24,7 +24,7 @@ def loaded_log():
     # Create logbase tables
     SQLModel.metadata.create_all(engine)
     # Load logbase engine
-    loaded_log.load(engine)
+    loaded_log.load_engine(engine)
     return loaded_log
 
 @pytest.fixture
@@ -78,7 +78,7 @@ def recorded_log():
         chat_section_record.branches.append(chat_branch_record)
         logbase.commit()
     # Load logbase engine
-    recorded_log.load(engine)
+    recorded_log.load_engine(engine)
     return recorded_log
 
 ## =========================== `__init__()` Method Test =========================== ##
@@ -89,12 +89,12 @@ def test_initialize_method(log):
     assert log._engine == None
 
 ## ============================= `load()` Method Test ============================= ##
-def test_load_method(log):
+def test_load_engine_method(log):
     '''Test whether method can load logbase engine properly.'''
     # Create logbase engine
     engine = create_engine(url='sqlite://')
     # Execute logbase engine load
-    log.load(engine)
+    log.load_engine(engine)
     # Validate loaded value
     assert log.section == None
     assert log.branch == None
@@ -563,10 +563,10 @@ def test_chat_method_without_section(loaded_log):
                         temperature=0.6)
         
 ## ============================== `get()` Method Test ============================== ##
-def test_get_method(recorded_log):
+def test_get_record_method(recorded_log):
     '''Test whether method can get specific log record properly.'''
     # Get log record
-    record = recorded_log.get(1,0)
+    record = recorded_log.get_record(1,0)
     # Set standard value
     the_record = Record(section=1,
                         type='chat',
@@ -588,16 +588,16 @@ def test_get_method(recorded_log):
     assert recorded_log.section == None
     assert recorded_log.branch == None
 
-def test_get_method_with_not_existed_branch(recorded_log):
+def test_get_record_method_with_not_existed_branch(recorded_log):
     '''Test whether method can raise exception properly 
     when getting not existed branch record of current section record.'''
     # Get log record
     with pytest.raises(LogBranchNotExistError,
                        match='Branch `1` not existed in Section `1`'):
-        record = recorded_log.get(1,1)
+        record = recorded_log.get_record(1,1)
 
-def test_get_method_with_not_existed_section(recorded_log):
+def test_get_record_method_with_not_existed_section(recorded_log):
     '''Test whether method can raise exception properly 
     when getting not existed section record.'''
     with pytest.raises(LogSectionNotExistError,match='2'):
-        record = recorded_log.get(2,0)
+        record = recorded_log.get_record(2,0)
