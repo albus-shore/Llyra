@@ -3,6 +3,7 @@ from ..utils import Role
 from ...exceptions.components.strategys import StrategySectionMissingError, StrategyParameterMissingError
 from warnings import warn
 from pathlib import Path
+from copy import deepcopy
 import tomllib
 
 class Strategy:
@@ -10,30 +11,50 @@ class Strategy:
     for working with inference strategies.'''
     ## ============================= Initialize Method ============================= ##
     def __init__(self) -> None:
-        '''The method is defined for initalizeing Strategy class object.'''
+        '''The method is defined to initalize Strategy class object.'''
         # Define necessary object attributes
         self.call:Call = None
         self.chat:Chat = None
+        # Define toml file content internal copy attribute
+        self._content:str = None
 
-    ## ================================ Load Method ================================ ##
-    def load(self,path:Path) -> None:
-        '''The method is defined for loading strategy content from file.
+    ## ================================ Read Method ================================ ##
+    def read_toml(self,path:Path) -> None:
+        '''The method is defined to read strategy content from file.
         Args:
             path: A Path instance indicate the path to the strategy file.
         '''
-        # Load strategy file
+        # Read strategy file
         try:
             with path.open('rb') as obj:
                 content = tomllib.load(obj)
         except FileNotFoundError:
             raise FileNotFoundError('Strategy file not found in provided path.')
-        # Read call strategy parameters
+        # Read additional prompt file
+        try:
+            addition_path = content['chat']['prompt']
+        except KeyError:
+            pass
+        else:
+            addition_obj = Path(addition_path)
+            try:
+                addition = addition_obj.read_text(encoding='utf-8')
+            except FileNotFoundError:
+                raise FileNotFoundError('Prompt file not found in provided path.')
+            content['chat']['prompt'] = addition
+        # Save strategy content
+        self._content = deepcopy(content)
+
+    ## ================================ Load Method ================================ ##
+    def load_content(self,) -> None:
+        '''The method is defined to load strategy parameters from strategy content.'''
+        # Load call strategy parameters
         ## Extract all call strategy parameters
         try:
-            call = content['call']
+            call = self._content['call']
         except KeyError:
             raise StrategySectionMissingError('call')
-        ## Read call strategy parameters
+        ## Load call strategy parameters
         try:
             stop = call['stop']
         except KeyError:
@@ -49,30 +70,24 @@ class Strategy:
             warn(message,RuntimeWarning)
             temperature = 0
         self.call:Call = Call(stop,temperature)
-        # Read chat strategy parameters
+        # Load chat strategy parameters
         ## Extract all chat strategy parameters
         try:
-            chat = content['chat']
+            chat = self._content['chat']
         except KeyError:
             raise StrategySectionMissingError('chat')
-        ## Read additonal prompt
+        ## Load additonal prompt
         try:
-            addition_path = chat['prompt']
+            addition = chat['prompt']
         except KeyError:
             addition = None
-        else:
-            addition_obj = Path(addition_path)
-            try:
-                addition = addition_obj.read_text(encoding='utf-8')
-            except FileNotFoundError:
-                raise FileNotFoundError('Prompt file not found in provided path.')
-        ## Read chat role parameters
-        ### Etra all chat role parameters
+        ## Load chat role parameters
+        ### Extract all chat role parameters
         try:
             role_content = chat['role']
         except KeyError:
             raise StrategySectionMissingError('chat.role')
-        ### Read chat role parameters
+        ### Load chat role parameters
         try:
             prompt = role_content['prompt']
         except KeyError:
@@ -89,7 +104,7 @@ class Strategy:
         except KeyError:
             raise StrategyParameterMissingError('chat.role','output')
         role = Role(prompt,input,output)
-        ## Read other chat strategy parameters
+        ## Load other chat strategy parameters
         try:
             stop = chat['stop']
         except KeyError:
@@ -108,7 +123,7 @@ class Strategy:
 
     ## ============================== Update Methods ============================== ##
     def update_call(self,stop:str|list,temperature:float) -> None:
-        '''The method is defined for update inference strategy for call.
+        '''The method is defined to update inference strategy for call.
         Args:
             stop: A string or a list of strings 
                 indicate where the model should stop generation.
@@ -122,7 +137,7 @@ class Strategy:
     def update_chat(self,addition:str,
                     prompt_role:str,input_role:str,output_role:str,
                     stop:str|list,temperature:float) -> None:
-        '''The method is defined for update inference strategy for chat.
+        '''The method is defined to update inference strategy for chat.
         Args:
             addition: A string indicate additional prompt for chat inference.
             prompt_role: A string indicate the role of additional prompt.

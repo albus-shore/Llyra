@@ -36,7 +36,8 @@ def loaded_strategy(tmp_path):
     test_strategy = tmp_path / 'test.toml'
     test_strategy.write_text(content)
     # Load test strategy content
-    loaded_strategy.load(test_strategy)
+    loaded_strategy.read_toml(test_strategy)
+    loaded_strategy.load_content()
     return loaded_strategy
 
 ## =========================== `__init__()` Method Test =========================== ##
@@ -44,10 +45,11 @@ def test_initialize_method(strategy):
     '''Test whether the class can be initialized properly.'''
     assert strategy.call == None
     assert strategy.chat == None
+    assert strategy._content == None
 
-## ============================= `load()` Method Test ============================= ##
-def test_load_method(strategy,tmp_path):
-    '''Test whether method can load and read all strategy parameters properly.'''
+## =========================== `read_toml()` Method Test =========================== ##
+def test_read_toml_method(strategy, tmp_path):
+    '''Test whether method can read strategy content from toml file properly.'''
     # Set test prompt file
     content = 'This is for test.'
     test_prompt = tmp_path / 'test.txt'
@@ -68,41 +70,29 @@ def test_load_method(strategy,tmp_path):
     '''
     test_strategy = tmp_path / 'test.toml'
     test_strategy.write_text(content)
-    # Load test strategy content
-    strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0.7)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 'This is for test.','<test-chat-stop-token>',0.8)
-    
-def test_load_method_without_chat_addition(strategy,tmp_path):
-    '''Test whether method can load and read all strategy parameters 
-    without chat additional prompt properly.'''
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0.7)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 None,'<test-chat-stop-token>',0.8)    
+    # Read test strategy content
+    strategy.read_toml(test_strategy)
+    # Validate read value
+    assert strategy._content == {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }
 
-def test_load_method_without_chat_addition_and_prompt_role(strategy,tmp_path):
-    '''Test whether method can load and read all strategy parameters 
-    without chat additional prompt and prompt role properly.'''
+def test_read_toml_method_without_addition_path(strategy,tmp_path):
+    '''Test whether method can read strategy content properly 
+    without additional prompt path.'''
     # Set test strategy file
     content = f'''
     [call]
@@ -112,297 +102,34 @@ def test_load_method_without_chat_addition_and_prompt_role(strategy,tmp_path):
     stop = "<test-chat-stop-token>"
     temperature = 0.8
     [chat.role]
+    prompt = "test-system"
     input = "test-input"
     output = "test-output"
     '''
     test_strategy = tmp_path / 'test.toml'
     test_strategy.write_text(content)
-    # Load test strategy content
-    strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0.7)
-    assert strategy.chat == Chat(Role(None,'test-input','test-output'),
-                                 None,'<test-chat-stop-token>',0.8)
+    # Read test strategy content
+    strategy.read_toml(test_strategy)
+    # Validate read value
+    assert strategy._content == {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }
 
-def test_load_method_with_call_stop_fallback(strategy,tmp_path):
-    '''Test whether method auto fallback to `[]` and rasie warning 
-    when missing `stop` parameter of `call` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    warns_message = 'Missing `stop` parameter of `call` section '
-    warns_message += "in `strategy.toml` , auto-fallback to `[]`."
-    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
-        strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call([],0.7)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 'This is for test.','<test-chat-stop-token>',0.8)
-    
-def test_load_method_with_call_temperature_fallback(strategy,tmp_path):
-    '''Test whether method auto fallback to `0` and rasie warning 
-    when missing `temperature` parameter of `call` section.'''
-    # Set test prompt file            
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    warns_message = 'Missing `temperature` parameter of `call` section '
-    warns_message += "in `strategy.toml` , auto-fallback to `0`."
-    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
-        strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 'This is for test.','<test-chat-stop-token>',0.8)  
-
-def test_load_method_with_chat_stop_fallback(strategy,tmp_path):
-    '''Test whether method auto fallback to `[]` and rasie warning 
-    when missing `stop` parameter of `chat` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    warns_message = 'Missing `stop` parameter of `chat` section '
-    warns_message += "in `strategy.toml` , auto-fallback to `[]`."
-    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
-        strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0.7)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 'This is for test.',[],0.8)     
-    
-def test_load_method_with_chat_temperature_fallback(strategy,tmp_path):
-    '''Test whether method auto fallback to `0` and rasie warning 
-    when missing `temperature` parameter of `chat` section.'''
-    # Set test prompt file            
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    warns_message = 'Missing `temperature` parameter of `chat` section '
-    warns_message += "in `strategy.toml` , auto-fallback to `0`."
-    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
-        strategy.load(test_strategy)
-    # Validate loaded value
-    assert strategy.call == Call('<test-call-stop-token>',0.7)
-    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
-                                 'This is for test.','<test-chat-stop-token>',0)
-
-def test_load_method_with_chat_addition_and_without_prompt_role(strategy,tmp_path):
+def test_read_toml_method_loading_addition_from_error_path(strategy,tmp_path):
     '''Test whether method raise exception properly
-    without `prompt` parameter in `chat.role` section 
-    and with `addition` parameter in `chat` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content     
-    with pytest.raises(StrategyParameterMissingError,
-        match="Missing `prompt` parameter of `chat.role` section in `strategy.toml`."):
-        strategy.load(test_strategy)
-
-def test_load_method_without_input_role_parameter(strategy,tmp_path):
-    '''Test whether method raise exception properly 
-    without `input` parameter in `chat.role` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    with pytest.raises(StrategyParameterMissingError,
-        match="Missing `input` parameter of `chat.role` section in `strategy.toml`."):
-        strategy.load(test_strategy)
-
-def test_load_method_without_output_role_parameter(strategy,tmp_path):
-    '''Test whether method raise exception properly 
-    without `input` parameter in `chat.role` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file        
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    with pytest.raises(StrategyParameterMissingError,
-        match="Missing `output` parameter of `chat.role` section in `strategy.toml`."):
-        strategy.load(test_strategy)
-
-def test_load_method_without_chat_role_section(strategy,tmp_path):
-    '''Test whether method raise exception properly 
-    without `role` section in `chat` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    with pytest.raises(StrategySectionMissingError,match='chat.role'):
-        strategy.load(test_strategy)
-
-def test_load_method_without_call_section(strategy,tmp_path):
-    '''Test whether method raise exception properly 
-    without `call` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [chat]
-    prompt = "{str(test_prompt)}"
-    stop = "<test-chat-stop-token>"
-    temperature = 0.8
-    [chat.role]
-    prompt = "test-system"
-    input = "test-input"
-    output = "test-output"
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    with pytest.raises(StrategySectionMissingError,match='call'):
-        strategy.load(test_strategy)       
-
-def test_load_method_without_chat_section(strategy,tmp_path):
-    '''Test whether method raise exception properly 
-    without `chat` section.'''
-    # Set test prompt file
-    content = 'This is for test.'
-    test_prompt = tmp_path / 'test.txt'
-    test_prompt.write_text(content)
-    # Set test strategy file
-    content = f'''
-    [call]
-    stop = "<test-call-stop-token>"
-    temperature = 0.7
-    '''
-    test_strategy = tmp_path / 'test.toml'
-    test_strategy.write_text(content)
-    # Load test strategy content
-    with pytest.raises(StrategySectionMissingError,match='chat'):
-        strategy.load(test_strategy)  
-
-def test_load_method_loading_addition_from_error_path(strategy,tmp_path):
-    '''Test whether method raise exception properly
-    when load additional prompt from error path.'''
+    when read additional prompt from error path.'''
     # Set test prompt file path
     test_prompt = 'test.txt'
     # Set test strategy file
@@ -424,17 +151,338 @@ def test_load_method_loading_addition_from_error_path(strategy,tmp_path):
     # Load test strategy content
     with pytest.raises(FileNotFoundError,
         match='Prompt file not found in provided path.'):
-        strategy.load(test_strategy)   
+        strategy.read_toml(test_strategy)            
 
-def test_load_method_from_error_path(strategy):
-    '''Test whether method raise exception properly
-    when load stategy from error path.'''
-    # Set test strategy file path
+def test_read_toml_method_from_error_path(strategy):
+    '''Test whether method can raise exception propely 
+    when read strategy content from error path.'''
+    # Set test strategy file
     test_strategy = Path('config/strategy.toml')
-    # Load test strategy content
+    # Read test strategy content
     with pytest.raises(FileNotFoundError,
-        match='Strategy file not found in provided path.'):
-        strategy.load(test_strategy)           
+                       match='Strategy file not found in provided path.'):
+        strategy.read_toml(test_strategy)
+
+## ========================= `load_content()` Method Test ========================= ##
+def test_load_content_method(strategy):
+    '''Test whether method can load all strategy parameters 
+    from strategy content properly.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0.7)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 'This is for test.','<test-chat-stop-token>',0.8)
+    
+def test_load_content_method_without_chat_addition(strategy):
+    '''Test whether method can load all strategy parameters from strategy content 
+    without chat additional prompt properly.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0.7)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 None,'<test-chat-stop-token>',0.8)    
+
+def test_load_content_method_without_chat_addition_and_prompt_role(strategy):
+    '''Test whether method can load all strategy parameters from strategy content
+    without chat additional prompt and prompt role properly.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'role': {
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0.7)
+    assert strategy.chat == Chat(Role(None,'test-input','test-output'),
+                                 None,'<test-chat-stop-token>',0.8)
+
+def test_load_content_method_with_call_stop_fallback(strategy):
+    '''Test whether method auto fallback to `[]` and rasie warning 
+    when missing `stop` parameter of `call` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    warns_message = 'Missing `stop` parameter of `call` section '
+    warns_message += "in `strategy.toml` , auto-fallback to `[]`."
+    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
+        strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call([],0.7)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 'This is for test.','<test-chat-stop-token>',0.8)
+    
+def test_load_content_method_with_call_temperature_fallback(strategy):
+    '''Test whether method auto fallback to `0` and rasie warning 
+    when missing `temperature` parameter of `call` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    warns_message = 'Missing `temperature` parameter of `call` section '
+    warns_message += "in `strategy.toml` , auto-fallback to `0`."
+    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
+        strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 'This is for test.','<test-chat-stop-token>',0.8)  
+
+def test_load_content_method_with_chat_stop_fallback(strategy):
+    '''Test whether method auto fallback to `[]` and rasie warning 
+    when missing `stop` parameter of `chat` section.'''
+     # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    warns_message = 'Missing `stop` parameter of `chat` section '
+    warns_message += "in `strategy.toml` , auto-fallback to `[]`."
+    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
+        strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0.7)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 'This is for test.',[],0.8)     
+    
+def test_load_content_method_with_chat_temperature_fallback(strategy):
+    '''Test whether method auto fallback to `0` and rasie warning 
+    when missing `temperature` parameter of `chat` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            },
+        }    
+    # Load test strategy parameters
+    warns_message = 'Missing `temperature` parameter of `chat` section '
+    warns_message += "in `strategy.toml` , auto-fallback to `0`."
+    with pytest.warns(RuntimeWarning,match=escape(warns_message)):
+        strategy.load_content()
+    # Validate loaded value
+    assert strategy.call == Call('<test-call-stop-token>',0.7)
+    assert strategy.chat == Chat(Role('test-system','test-input','test-output'),
+                                 'This is for test.','<test-chat-stop-token>',0)
+
+def test_load_content_method_with_chat_addition_and_without_prompt_role(strategy):
+    '''Test whether method raise exception properly
+    without `prompt` parameter in `chat.role` section 
+    and with `addition` parameter in `chat` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategyParameterMissingError,
+        match="Missing `prompt` parameter of `chat.role` section in `strategy.toml`."):
+        strategy.load_content()
+
+def test_load_content_method_without_input_role_parameter(strategy):
+    '''Test whether method raise exception properly 
+    without `input` parameter in `chat.role` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategyParameterMissingError,
+        match="Missing `input` parameter of `chat.role` section in `strategy.toml`."):
+        strategy.load_content()
+
+def test_load_content_method_without_output_role_parameter(strategy):
+    '''Test whether method raise exception properly 
+    without `input` parameter in `chat.role` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategyParameterMissingError,
+        match="Missing `output` parameter of `chat.role` section in `strategy.toml`."):
+        strategy.load_content()
+
+def test_load_content_method_without_chat_role_section(strategy):
+    '''Test whether method raise exception properly 
+    without `role` section in `chat` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        'chat': {
+            'prompt': 'This is for test.',
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategySectionMissingError,match='chat.role'):
+        strategy.load_content()
+
+def test_load_content_method_without_call_section(strategy):
+    '''Test whether method raise exception properly 
+    without `call` section.'''
+    # Set test content
+    strategy._content = {
+        'chat': {
+            'prompt': 'This is for test.',
+            'role': {
+                'prompt': 'test-system',
+                'input': 'test-input',
+                'output': 'test-output'
+                },
+            'stop': '<test-chat-stop-token>',
+            'temperature': 0.8,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategySectionMissingError,match='call'):
+        strategy.load_content()      
+
+def test_load_content_method_without_chat_section(strategy):
+    '''Test whether method raise exception properly 
+    without `chat` section.'''
+    # Set test content
+    strategy._content = {
+        'call': {
+            'stop': '<test-call-stop-token>',
+            'temperature': 0.7,
+            },
+        }    
+    # Load test strategy parameters
+    with pytest.raises(StrategySectionMissingError,match='chat'):
+        strategy.load_content()  
 
 ## ========================== `update_call()` Method Test ========================== ##        
 def test_update_call_method(loaded_strategy):
