@@ -8,6 +8,7 @@ class ConfigData:
     '''This class is a dataclass contains information 
     for general inference configuration.
     Args:
+        model: A `str` indicates the name of model used for inference.
         strategy: A `Path` instance indicates the location of 
             inference strategy `toml` file.
         local: A `LocalConfigData` instance indicates 
@@ -15,6 +16,7 @@ class ConfigData:
         remote: A `RemoteConfigData` instance indicates 
             the remote inference configuration.
     '''
+    model: str
     strategy: Path
     local: LocalConfigData
     remote: RemoteConfigData
