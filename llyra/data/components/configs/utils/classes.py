@@ -7,7 +7,7 @@ class LocalConfigData:
     '''This class is a dataclass contains information 
     for local inference configuration.
     Args:
-        model: A `Path` instance indicates the location of local model file.
+        model: A `Path` instance indicates the path to local model file.
         format: A `str` indicates the format used for local chat inference.
         gpu: A `bool` indicates whether using gpu for local inference.
             Set `True` to use gpu, set `False` to use cpu.
@@ -15,7 +15,7 @@ class LocalConfigData:
             Set `True` to keep, set `False` to release.
     '''
     model:Path
-    format:str
+    format:str|None
     gpu:bool
     ram:bool 
 
