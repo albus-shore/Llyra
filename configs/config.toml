@@ -15,7 +15,7 @@ suffix = ".gguf"
 [remote]
 model = "llama-2"
 
-[remote.server]
+[remote.service]
 url = "http://localhost"
 port = 11434
 endpoint = "api/"
