@@ -15,6 +15,6 @@ class Role:
         output: A given `str` indicate the role of output 
             as known as the model response.
     '''
-    prompt:LlamaCppRole
+    prompt:LlamaCppRole|False
     input:LlamaCppRole
     output:LlamaCppRole
