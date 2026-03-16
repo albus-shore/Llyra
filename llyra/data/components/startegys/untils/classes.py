@@ -26,6 +26,6 @@ class ChatStrategyData:
         temperature: A `float` indicates the temperature of model inference.
     '''
     role:Role
-    prompt:str
+    prompt:str|False
     stop:str|list
     temperature:float
