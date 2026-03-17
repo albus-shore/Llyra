@@ -32,6 +32,25 @@ class StrategyParameterMissingError(StrategyError):
             'in strategy file.'
         super().__init__(indication)
 
+## ================================= `Crash` Error ================================= ##
+class StrategyCrashError(StrategyError):
+    '''This exception indicates the attempting 
+    to load extra prompt without designating prompt role.'''
+    def __init__(self):
+        indication = '`prompt` parameter not provided in `chat.role` section '\
+            'or being manually set via methods.\n'\
+            'Extra prompt not available.'
+        super().__init__(indication)
+
+## ============================ `NoAvailableMode` Error ============================ ##
+class StrategyNoAvailableModeError(StrategyError):
+    '''This exception indicates neither `call` or `chat` strategy is initialized.'''
+    def __init__(self):
+        indication = 'Neither `call` or `chat` section is found in strategy file.'\
+            'No inference mode available.\n'\
+            'Note: You can not initialize strategy sections after instance creation.'
+        super().__init__(indication)
+
 ## ============================== `OutOfRange` Error ============================== ##
 class StrategyOutOfRangeError(StrategyError):
     '''This exception indicates the attempting to change uninitialized parameters.'''
